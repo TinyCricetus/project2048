@@ -5,21 +5,21 @@ const { ccclass, property } = cc._decorator;
 const MAXN: number = 50;
 
 @ccclass
-export class Pool extends cc.Component {
+export class NodePool extends cc.Component {
 
     public static GridPool: cc.NodePool = new cc.NodePool();
 
     //初始化结点池
     public static initNodePool(pre: cc.Prefab): void {
         for (let i = 0; i < MAXN; i++) {
-            Pool.GridPool.put(cc.instantiate(pre));
+            NodePool.GridPool.put(cc.instantiate(pre));
         }
     }
     //取结点
     public static getNode(pre: cc.Prefab): cc.Node{
         let nd: cc.Node = null;
-        if (Pool.GridPool.size() > 0) {
-            nd = Pool.GridPool.get();
+        if (NodePool.GridPool.size() > 0) {
+            nd = NodePool.GridPool.get();
         } else {
             nd = cc.instantiate(pre);
         }

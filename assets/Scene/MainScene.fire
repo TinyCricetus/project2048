@@ -63,13 +63,16 @@
       },
       {
         "__id__": 10
+      },
+      {
+        "__id__": 16
       }
     ],
     "_tag": -1,
     "_active": true,
     "_components": [
       {
-        "__id__": 16
+        "__id__": 18
       }
     ],
     "_prefab": null,
@@ -257,8 +260,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 691.5,
-      "height": 649
+      "width": 720,
+      "height": 1280
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -266,8 +269,8 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": -0.25,
-      "y": 47.5
+      "x": 0,
+      "y": 0
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -301,19 +304,6 @@
     "_atlas": null
   },
   {
-    "__type__": "87123GajqhDhr9MsYPvZB0g",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 6
-    },
-    "_enabled": true,
-    "gridPrefab": {
-      "__uuid__": "535fedc9-fdb9-477d-bf66-9ec55bad6376"
-    },
-    "centerToEdge": 3
-  },
-  {
     "__type__": "cc.Widget",
     "_name": "",
     "_objFlags": 0,
@@ -326,9 +316,9 @@
       "__id__": 2
     },
     "_alignFlags": 41,
-    "_left": 14,
-    "_right": 14.5,
-    "_top": 268,
+    "_left": 0,
+    "_right": 0,
+    "_top": 0,
     "_bottom": 0,
     "_verticalCenter": 0,
     "_horizontalCenter": 0,
@@ -340,6 +330,25 @@
     "_isAbsVerticalCenter": true,
     "_originalWidth": 691,
     "_originalHeight": 0
+  },
+  {
+    "__type__": "87123GajqhDhr9MsYPvZB0g",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 6
+    },
+    "_enabled": true,
+    "gridPrefab": {
+      "__uuid__": "535fedc9-fdb9-477d-bf66-9ec55bad6376"
+    },
+    "centerToEdge": 3,
+    "shapeCraetorPlace": {
+      "__id__": 10
+    },
+    "gameGrid": {
+      "__id__": 16
+    }
   },
   {
     "__type__": "cc.Node",
@@ -356,9 +365,6 @@
     "_tag": -1,
     "_active": true,
     "_components": [
-      {
-        "__id__": 13
-      },
       {
         "__id__": 14
       },
@@ -394,7 +400,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": -425.5
+      "y": -475
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -416,6 +422,9 @@
     "_components": [
       {
         "__id__": 12
+      },
+      {
+        "__id__": 13
       }
     ],
     "_prefab": null,
@@ -482,6 +491,16 @@
     "_atlas": null
   },
   {
+    "__type__": "188cdaF/MVNk7Pzef1NQysS",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 11
+    },
+    "_enabled": true,
+    "duration": 5
+  },
+  {
     "__type__": "cc.Sprite",
     "_name": "",
     "_objFlags": 0,
@@ -522,7 +541,7 @@
     "_alignFlags": 41,
     "_left": 239.5,
     "_right": 239.5,
-    "_top": 945,
+    "_top": 994.5,
     "_bottom": 4,
     "_verticalCenter": 0,
     "_horizontalCenter": 0,
@@ -536,14 +555,71 @@
     "_originalHeight": 241
   },
   {
-    "__type__": "188cdaF/MVNk7Pzef1NQysS",
+    "__type__": "cc.Node",
+    "_name": "GameGrid",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 2
+    },
+    "_children": [],
+    "_tag": -1,
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 17
+      }
+    ],
+    "_prefab": null,
+    "_id": "fe+HdgKyNNCKz7LkHJUxcz",
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_cascadeOpacityEnabled": true,
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 250,
+      "height": 250
+    },
+    "_rotationX": 0,
+    "_rotationY": 0,
+    "_scaleX": 1,
+    "_scaleY": 1,
+    "_position": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": -475
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_localZOrder": 0,
+    "_globalZOrder": 0,
+    "_opacityModifyRGB": false,
+    "groupIndex": 0
+  },
+  {
+    "__type__": "655d9VhCuVNjKYu5AVcqZ/L",
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 10
+      "__id__": 16
     },
     "_enabled": true,
-    "duration": 5
+    "initPosNode": {
+      "__id__": 10
+    },
+    "gameScene": {
+      "__id__": 6
+    }
   },
   {
     "__type__": "cc.Canvas",

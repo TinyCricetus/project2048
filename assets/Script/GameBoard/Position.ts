@@ -86,6 +86,16 @@ export class Position extends cc.Component {
                 cnt--;
             }
         }
+        //使中心点对齐原点
+        let spos: cc.Vec2 = cc.v2(this.realPos[this.sourcePos.x][this.sourcePos.y].x, 
+            this.realPos[this.sourcePos.x][this.sourcePos.y].y);
+        for (let i = 1; i < length + 1; i++) {
+            for (let j = 1; j < length + 1; j++) {
+                if (this.realPos[i][j] != null) {
+                    this.realPos[i][j].subSelf(spos);
+                }
+            }
+        }
     }
 
     //用于对二维数组批量初始化操作

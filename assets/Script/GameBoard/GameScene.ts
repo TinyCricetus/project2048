@@ -1,36 +1,41 @@
 import { Position } from "./Position";
-import { GridNodePool } from "./GridNodePool";
+import { Pool } from "./GridNodePool";
 import { Grid } from "./Grid";
-
+import {ShapeCreator} from "./ShapeCreator";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class GameScene extends cc.Component {
 
     @property(cc.Prefab)
     gridPrefab: cc.Prefab = null;
     @property
     centerToEdge: number = 0;
+    @property(cc.Node)
+    shapeCraetorPlace: cc.Node = null;
+    @property(cc.Node)
+    gameGrid: cc.Node = null;
+    shapeCeartor: ShapeCreator = new ShapeCreator();//形状生成机
+    
 
     public position: Position = new Position();
     public gridArray: Array<cc.Node> = new Array<cc.Node>();
 
     public onLoad(): void {
-        GridNodePool.initNodePool(this.gridPrefab);//初始化结点池
+        Pool.initNodePool(this.gridPrefab);//初始化结点池
         //如果开始没有给出格数，那就使用默认格数2
         this.position.positionInit(this.centerToEdge == 0 ? 2 : this.centerToEdge);
 
         this.drawGrid();
+        //创造一个方块
+        this.creatorGrid();
     }
 
     //将坐标放入方块
     public gridAddToArray(pos: cc.Vec2): void {
         let tempGrid: cc.Node = null;
-        if (GridNodePool.GridPool.size() < 0) {
-            GridNodePool.addNode(this.gridPrefab);
-        }
-        tempGrid = GridNodePool.GridPool.get();
+        tempGrid = Pool.getNode(this.gridPrefab);
         tempGrid.position = pos;
         this.gridArray.push(tempGrid);
     }
@@ -42,8 +47,7 @@ export default class NewClass extends cc.Component {
                 if (pos[i][j] == null) {
                     continue;
                 } else {
-                    this.gridAddToArray(pos[i][j].sub(
-                        pos[this.position.sourcePos.x][this.position.sourcePos.y]));
+                    this.gridAddToArray(pos[i][j]);
                 }
             }
         }
@@ -54,5 +58,13 @@ export default class NewClass extends cc.Component {
             }
             this.node.addChild(this.gridArray[i]);
         }
+    }
+
+    //生产区创造方块
+    public creatorGrid(): void {
+        let tempNode: cc.Node = null;
+        tempNode = this.shapeCeartor.creatorShape();
+        tempNode.position = cc.v2(0, 0);
+        this.gameGrid.addChild(tempNode);
     }
 }
