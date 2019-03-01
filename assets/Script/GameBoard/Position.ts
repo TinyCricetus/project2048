@@ -9,13 +9,13 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export class Position extends cc.Component {
 
+    public sourcePos: cc.Vec2 = null;//格子坐标原点(数组坐标)
+    public maze: number[][] = [];//棋盘,位置-1表示没有位置，位置0表示背景(可放置方块)
+    public realPos: cc.Vec2[][] = [];//用于储存真实坐标
     public grid: Grid = new Grid();//获取一个grid实例便于使用
     public centerToEdge: number = 0;//中心点距离边缘的格数
-    public sourcePos: cc.Vec2 = null;//格子坐标原点
-    public maze: number[][] = [];//棋盘
     public oneStepRow: number = 0;//走一格的长度,纵向和横向与方块的长宽有关
     public oneStepCol: number = 0;
-    public realPos: cc.Vec2[][] = [];//用于储存真实坐标
     public halfStep: number = 0;//用于坐标偏移，造成六边形形状
 
     /**
@@ -23,7 +23,6 @@ export class Position extends cc.Component {
      * @param centerToEdge 中心点距离边缘的格数
      */
     public positionInit(centerToEdge: number): void {
-
         this.centerToEdge = centerToEdge;
         this.init();//获得相关数据后，对棋盘进行初始化
     }
@@ -31,7 +30,7 @@ export class Position extends cc.Component {
     public init(): void {
         //初始化整个棋盘
         let length = this.centerToEdge * 2 + 1;
-        this.setMaze(this.maze, length, -1);
+        this.setMaze(this.maze, length, -1);//将棋盘标记为全部不可用
         this.setMaze(this.realPos, length, null);
         //计算中心点坐标
         this.sourcePos = cc.v2(this.centerToEdge + 1, this.centerToEdge + 1);

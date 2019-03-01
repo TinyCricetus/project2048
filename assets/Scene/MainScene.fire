@@ -72,7 +72,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 18
+        "__id__": 17
       }
     ],
     "_prefab": null,
@@ -223,7 +223,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "GameBoard",
+    "_name": "GameScene",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -342,7 +342,7 @@
     "gridPrefab": {
       "__uuid__": "535fedc9-fdb9-477d-bf66-9ec55bad6376"
     },
-    "centerToEdge": 3,
+    "centerToEdge": 1,
     "shapeCraetorPlace": {
       "__id__": 10
     },
@@ -564,11 +564,7 @@
     "_children": [],
     "_tag": -1,
     "_active": true,
-    "_components": [
-      {
-        "__id__": 17
-      }
-    ],
+    "_components": [],
     "_prefab": null,
     "_id": "fe+HdgKyNNCKz7LkHJUxcz",
     "_opacity": 255,
@@ -605,21 +601,6 @@
     "_globalZOrder": 0,
     "_opacityModifyRGB": false,
     "groupIndex": 0
-  },
-  {
-    "__type__": "655d9VhCuVNjKYu5AVcqZ/L",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 16
-    },
-    "_enabled": true,
-    "initPosNode": {
-      "__id__": 10
-    },
-    "gameScene": {
-      "__id__": 6
-    }
   },
   {
     "__type__": "cc.Canvas",
