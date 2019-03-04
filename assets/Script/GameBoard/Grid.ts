@@ -1,5 +1,6 @@
 import { WIDTH, HEIGHT, DISTANCE } from "./GridData";
 
+
 const {ccclass, property} = cc._decorator;
 
 /**
@@ -8,24 +9,29 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export class Grid extends cc.Component {
 
-    //格子的坐标(中心)
-    @property(cc.Vec2)
-    pos: cc.Vec2 = null;
+    @property(cc.Integer)
+    style: number = 0;//方块风格
+
+
     //格子的宽和高
     private width: number = WIDTH;
     private height: number = HEIGHT;
     private distance: number = DISTANCE;
 
-    // constructor (p: cc.Vec2) {
-    //     this.pos = p;
-    // }
-    
-    public getPos (): cc.Vec2 {
-        return this.pos;
+    /**
+     * 方块初始化
+     * @param style 方块风格
+     */
+    public init(style: number): void {
+        this.style = style;
     }
 
-    public setPos (p: cc.Vec2): void {
-        this.pos = p;
+    public setStyle(style: number): void {
+        this.style = style;
+    }
+
+    public getStyle(): number {
+        return this.style;
     }
 
     public getWidth (): number {
@@ -38,23 +44,5 @@ export class Grid extends cc.Component {
 
     public getDistance (): number {
         return this.distance;
-    }
-
-
-    //获取四个边缘的单个坐标
-    public getTop (): number {
-        return this.pos.y + (this.height / 2);
-    }
-
-    public getBottom (): number {
-        return this.pos.y - (this.height / 2);
-    }
-
-    public getRight (): number {
-        return this.pos.x + (this.width / 2);
-    }
-
-    public getLeft (): number {
-        return this.pos.x - (this.width / 2);
     }
 }

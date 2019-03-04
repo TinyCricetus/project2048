@@ -1,4 +1,5 @@
 import { GameScene } from "./GameScene";
+import { WIDTH, HEIGHT } from "./GridData";
 
 /**
  * 用于控制方块
@@ -15,17 +16,22 @@ export class GridControl {
     private canDrag: boolean = false;//拖动
     private canRotate: boolean = false;//旋转
 
+    private gridRealPos: cc.Vec2[][] = null;
+
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
         this.init();
     }
 
     public init(): void {
-        
-        this.initPosNode = this.gameScene.shapeCraetorPlace;
+
+        this.initPosNode = this.gameScene.shapeCraetor;
         //初始化位置坐标
         this.gameGrid = this.gameScene.gameGrid;
         this.gameGrid.position = this.initPosNode.position;
+
+        //初始化背景方块真实坐标
+        this.gridRealPos = this.gameScene.position.realPos;
 
         //对游戏场景进行监听
         this.gameScene.node.on(cc.Node.EventType.TOUCH_START, this.touchedBegin.bind(this));
@@ -64,19 +70,51 @@ export class GridControl {
         }
     }
 
-    public touchedEnd(): void {
+    public touchedEnd(event: cc.Event.EventTouch): void {
         if (this.canRotate && this.actionFlag) {
             this.actionFlag = false;
-            this.gameGrid.runAction(cc.sequence(cc.rotateBy(1, 180), 
-            cc.callFunc(this.judgeAction, this)) );
-            cc.callFunc
+            this.gameGrid.runAction(cc.sequence(cc.rotateBy(1, 180),
+                cc.callFunc(this.judgeAction, this)));
             this.canRotate = false;
         }
         this.canDrag = false;
+        //一旦松开，控制器因该马上回到形状发生器位置
+        this.gameGrid.position = this.initPosNode.position;
+        //一旦松开，先判断坐标再执行落子操作
+        let pos: cc.Vec2 = this.gameScene.node.convertToNodeSpaceAR(event.getLocation());
+        let judge: boolean = this.judgeMoveToChess(pos);
+        if (judge) {
+            this.gameScene.gameControl.moveToChess();
+        }
     }
 
     //用于动作回调，控制动作执行完毕后才可执行下一个动作
     public judgeAction(): void {
         this.actionFlag = true;
     }
+
+    public judgeMoveToChess(pos: cc.Vec2): boolean {
+        let ret: boolean = false;
+        for (let i = 0; i < this.gridRealPos.length; i++) {
+            for (let j = 0; j < this.gridRealPos[i].length; j++) {
+                if (this.gridRealPos[i][j] != null) {
+                    ret = this.isContain(this.gridRealPos[i][j], pos);
+                    //cc.log(ret);
+                    if (ret) {
+                        return ret;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    public isContain(pos: cc.Vec2, pos2: cc.Vec2): boolean {
+        if ((Math.abs(pos.x - pos2.x) < WIDTH / 2) &&
+            (Math.abs(pos.y - pos2.y) < HEIGHT / 2)) {
+            return true;
+        }
+        return false;
+    }
+
 }

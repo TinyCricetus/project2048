@@ -1,7 +1,7 @@
 import { Position } from "./GameBoard/Position";
 import { GameScene } from "./GameBoard/GameScene";
 import { GridControl } from "./GameBoard/GridControl";
-import { WIDTH, HEIGHT } from "./GameBoard/GridData";
+import { WIDTH, HEIGHT, NORMAL, SHALLOW, EMPTY, CANNOTPLACE, FULL } from "./GameBoard/GridData";
 
 /**
  * 游戏全局逻辑控制
@@ -17,6 +17,12 @@ export class GameControl {
     //用于持有形状生成器引用
     public gameGrid: cc.Node = null;
     public gameScene: GameScene = null;
+    //用于记录变化的方块在方块数组中的编号(将要落子的方块)
+    public changeGrid: Array<number> = null;
+    //落子标记，用于判断当前坐标是否能落子
+    public canPlace: boolean = false;
+    //落子数组位置记录
+    public placePos: cc.Vec2 = null;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -35,6 +41,12 @@ export class GameControl {
         this.bgGridArray = this.gameScene.gridArray;
         //获取形状生成器引用
         this.gameGrid = this.gameScene.gameGrid;
+        //初始化记录数组
+        this.changeGrid = new Array<number>();
+        //初始化落子判断标记
+        this.canPlace = false;
+        //初始化落子位置记录
+        this.placePos = cc.v2();
     }
 
 
@@ -46,32 +58,48 @@ export class GameControl {
     public judgePos(): void {
         //每次扫描都应该初始化
         let index: number = -1;
+        let sign: number = -1;
         for (let i = 0; i < this.scanMaze.length; i++) {
             for (let j = 0; j < this.scanMaze[i].length; j++) {
                 //扫描背景方块
-                if (this.scanMaze[i][j] == 0) {
+                if (this.scanMaze[i][j] != CANNOTPLACE) {
                     index++;
                     let judge: boolean = this.isContain(this.gridPosMaze[i][j]);
                     if (judge) {
-                        this.changeGridState(index);
+                        sign = index;
+                        //注意，记录的是在数组中的位置
+                        this.placePos.x = i;
+                        this.placePos.y = j;
                     }
                 }
             }
+        }
+        //cc.log(sign);
+        //如果判定重合就把背景变换状态，未重合就恢复
+        if (sign != -1 && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY) {
+            this.changeGridState(sign);
+            this.canPlace = true;
+        } else {
+            this.changeGridState(-1);
         }
     }
 
 
     public changeGridState(index: number): void {
-        cc.log("方块变化啦！");
+        //cc.log("方块变化啦！");
         for (let i = 0; i < this.bgGridArray.length; i++) {
             if (i == index) {
-                this.bgGridArray[i].opacity = 50;
+                this.bgGridArray[i].opacity = SHALLOW;
             } else {
-                this.bgGridArray[i].opacity = 200;
+                this.bgGridArray[i].opacity = NORMAL;
             }
         }
     }
 
+    /**
+     * 判断当前中心坐标是否与背景方块重合
+     * @param pos 
+     */
     public isContain(pos: cc.Vec2): boolean {
         //正在操控方块的坐标信息
         let tempPos = this.gameGrid.position;
@@ -82,4 +110,39 @@ export class GameControl {
         return false;
     }
 
+
+    public mazeToArrayIndex(pos: cc.Vec2): number {
+        let index: number = -1;
+        let stop = false;
+        for (let i = 0; i < this.scanMaze.length; i++) {
+            for (let j = 0; j < this.scanMaze[i].length; j++) {
+                if (this.scanMaze[i][j] != CANNOTPLACE) {
+                    index++;
+                    if (pos.x == i && pos.y == j) {
+                        stop = true;
+                        break;
+                    }
+                }
+            }
+            if (stop) {
+                break;
+            }
+        }
+        return index;
+    }
+
+    public moveToChess(): void {
+        if (this.canPlace) {
+            //这里编辑落子程序
+            let index = this.mazeToArrayIndex(this.placePos);
+            this.gameScene.addGridToScene(this.gameGrid.children[0], index);
+            this.canPlace = false;
+            this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
+            cc.log("落子成功！");
+            //落子后激活方块生产区域
+            this.gameScene.creatorGrid(1);
+        } else {
+            return;
+        }
+    }
 }

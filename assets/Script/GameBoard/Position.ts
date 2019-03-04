@@ -1,5 +1,5 @@
 import { Grid } from "./Grid";
-import { CORRECTVALUE } from "./GridData";
+import { CORRECTVALUE, CANNOTPLACE, EMPTY } from "./GridData";
 
 /**
  * 用于建立游戏格局坐标,本游戏采用六边形坐标
@@ -30,7 +30,7 @@ export class Position extends cc.Component {
     public init(): void {
         //初始化整个棋盘
         let length = this.centerToEdge * 2 + 1;
-        this.setMaze(this.maze, length, -1);//将棋盘标记为全部不可用
+        this.setMaze(this.maze, length, CANNOTPLACE);//将棋盘标记为全部不可用
         this.setMaze(this.realPos, length, null);
         //计算中心点坐标
         this.sourcePos = cc.v2(this.centerToEdge + 1, this.centerToEdge + 1);
@@ -42,7 +42,7 @@ export class Position extends cc.Component {
         let cnt = length - this.centerToEdge;//控制每行长度
         for (let i = 1; i < length + 1; i++) {
             for (let j = 1; j < cnt + 1; j++) {
-                this.maze[i][j] = 0;
+                this.maze[i][j] = EMPTY;
             }
             if (i < this.centerToEdge + 1) {
                 cnt++;

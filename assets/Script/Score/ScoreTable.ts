@@ -1,8 +1,20 @@
 
-const {ccclass, property} = cc._decorator;
+export class ScoreTable {
 
-@ccclass
-export class ScoreTable extends cc.Component {
+    public static gridNumber: {[key: number]: string} = {
+        1: "2",
+        2: "4",
+        3: "8",
+        4: "16",
+        5: "32",
+        6: "64",
+        7: "128",
+        8: "256",
+        9: "512",
+        10: "1024",
+        11: "2048",
+    };
+
 
     public static basicScore: {[key: number]: number} = {
         1   : 16,

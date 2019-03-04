@@ -16,9 +16,9 @@ export class GameScene extends cc.Component {
     @property(cc.Prefab)
     gridPrefab: cc.Prefab = null;//方块预制体
     @property(cc.Integer)
-    centerToEdge: number = 0;//控制棋盘大小
+    centerToEdge: number = 0;//控制棋盘大小，中心点到边缘的方块数
     @property(cc.Node)
-    shapeCraetorPlace: cc.Node = null;//用于获取形状生成器的位置信息
+    shapeCraetor: cc.Node = null;//用于获取形状生成器的位置信息
     @property(cc.Node)
     gameGrid: cc.Node = null;//管理方块的结点
 
@@ -32,9 +32,11 @@ export class GameScene extends cc.Component {
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
-        this.shapeCeartor = new ShapeCreator();
+        //初始化方块节点池
         this.nodePool = new GridPool();
         this.nodePool.initNodePool(this.gridPrefab);//初始化结点池
+        //创建形状生成器
+        this.shapeCeartor = new ShapeCreator(this.nodePool);
         //创建全局棋盘
         this.position = new Position();
         //如果开始没有给出格数，那就使用默认格数2
@@ -42,14 +44,13 @@ export class GameScene extends cc.Component {
         //布置方块背景
         this.drawGrid();
         //创造一个方块
-        this.creatorGrid();
-        //生成逻辑控制
+        this.creatorGrid(1);
+        //生成游戏主逻辑控制
         this.gameControl = new GameControl(this);
         //生成方块控制
         this.gridControl = new GridControl(this);
     }
 
-    //将坐标放入方块
     public gridAddToArray(pos: cc.Vec2): void {
         let tempGrid: cc.Node = null;
         tempGrid = this.nodePool.getNode();
@@ -65,12 +66,13 @@ export class GameScene extends cc.Component {
                 if (pos[i][j] == null) {
                     continue;
                 } else {
+                    //将坐标赋值给方块坐标
                     this.gridAddToArray(pos[i][j]);
                     //this.gridPosArray.push(pos[i][j]);
                 }
             }
         }
-
+        //加入结点
         for (let i = 0; i < this.gridArray.length; i++) {
             //cc.log(this.gridArray[i]);
             if (this.gridArray[i].position == this.position.sourcePos) {
@@ -81,11 +83,29 @@ export class GameScene extends cc.Component {
         cc.log("看一下背景方块数量:" + this.gridArray.length);
     }
 
-    //生产区创造方块
-    public creatorGrid(): void {
+    /**
+     * 创造方块并加入到方块产生区
+     */
+    public creatorGrid(style: number): void {
         let tempNode: cc.Node = null;
-        tempNode = this.shapeCeartor.creatorShape(this.nodePool);
+        tempNode = this.shapeCeartor.creatorShape(style);
         tempNode.position = cc.v2(0, 0);
         this.gameGrid.addChild(tempNode);
+    }
+
+    /**
+     * 主场景落子函数
+     * @param node 落子的对象
+     * @param pos 在方块数组中的位置
+     */
+    public addGridToScene(node: cc.Node, index: number): void {
+        //node.position = this.gridArray[index].position;
+        let style = node.getComponent("Grid").getStyle();
+        //cc.log(style);
+        node.parent.removeAllChildren();
+        this.nodePool.putNode(node);
+        let tempNode: cc.Node = this.shapeCeartor.creatorShape(style);
+        this.node.addChild(tempNode);
+        tempNode.position = this.gridArray[index].position;
     }
 }

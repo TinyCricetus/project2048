@@ -25,4 +25,8 @@ export class GridPool {
         }
         return nd;
     }
+    //放结点
+    public putNode(node: cc.Node): void {
+        this.gridPool.put(node);
+    }
 }

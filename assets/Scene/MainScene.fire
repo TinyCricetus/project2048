@@ -342,8 +342,8 @@
     "gridPrefab": {
       "__uuid__": "535fedc9-fdb9-477d-bf66-9ec55bad6376"
     },
-    "centerToEdge": 1,
-    "shapeCraetorPlace": {
+    "centerToEdge": 3,
+    "shapeCraetor": {
       "__id__": 10
     },
     "gameGrid": {
@@ -352,7 +352,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "shape_background",
+    "_name": "shapeCreator",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -411,7 +411,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "shape_circle",
+    "_name": "shapeCircle",
     "_objFlags": 0,
     "_parent": {
       "__id__": 10
