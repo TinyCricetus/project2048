@@ -110,7 +110,7 @@ export class GameControl {
         return false;
     }
 
-
+    //二维数组转一维的位置
     public mazeToArrayIndex(pos: cc.Vec2): number {
         let index: number = -1;
         let stop = false;
@@ -131,8 +131,33 @@ export class GameControl {
         return index;
     }
 
+    //一维数组转二维的位置
+    public arrayIndexToMaze(index: number): cc.Vec2 {
+        let pos: cc.Vec2 = cc.v2();
+        let tempIndex: number = -1;
+        let stop: boolean = false;
+        for (let i = 0; i < this.scanMaze.length; i++) {
+            for (let j = 0; j < this.scanMaze[i].length; j++) {
+                if (this.scanMaze[i][j] != CANNOTPLACE) {
+                    tempIndex++;
+                    //cc.log(`第${tempIndex}个坐标是(${i},${j})`);
+                    if (tempIndex == index) {
+                        pos.x = i;
+                        pos.y = j;
+                        stop = true;
+                        break;
+                    }
+                }
+            }
+            if (stop) {
+                break;
+            }
+        }
+        return pos;
+    }
+
     public moveToChess(): void {
-        if (this.canPlace) {
+        if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY) {
             //这里编辑落子程序
             let index = this.mazeToArrayIndex(this.placePos);
             this.gameScene.addGridToScene(this.gameGrid.children[0], index);
@@ -140,7 +165,8 @@ export class GameControl {
             this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
             cc.log("落子成功！");
             //落子后激活方块生产区域
-            this.gameScene.creatorGrid(1);
+            let num: number = Math.floor(Math.random() * 1000) % 10 + 1;//随机款式测试
+            this.gameScene.creatorGrid(num);
         } else {
             return;
         }

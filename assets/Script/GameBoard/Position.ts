@@ -11,7 +11,7 @@ export class Position extends cc.Component {
 
     public sourcePos: cc.Vec2 = null;//格子坐标原点(数组坐标)
     public maze: number[][] = [];//棋盘,位置-1表示没有位置，位置0表示背景(可放置方块)
-    public realPos: cc.Vec2[][] = [];//用于储存真实坐标
+    public realPos: cc.Vec2[][] = [];//用于储存背景格子真实坐标
     public grid: Grid = new Grid();//获取一个grid实例便于使用
     public centerToEdge: number = 0;//中心点距离边缘的格数
     public oneStepRow: number = 0;//走一格的长度,纵向和横向与方块的长宽有关
@@ -99,28 +99,13 @@ export class Position extends cc.Component {
 
     //用于对二维数组批量初始化操作
     public setMaze(maze: any[][], length: number, value: any): void {
-        for (let i = 0; i < length + 1; i++) {
+        for (let i = 0; i < length + 2; i++) {
             maze[i] = [];
-            for (let j = 0; j < length + 1; j++) {
+            for (let j = 0; j < length + 2; j++) {
                 maze[i][j] = value;
             }
         }
     }
-
-    // public searchMaze (maze: number[][], length: number): void {
-    //     let cnt = length - this.centerToEdge;//控制每行长度
-    //     for (let i = 1; i < length + 1; i++) {
-    //         for (let j = 1; j < cnt + 1; j++) {
-    //             //填写操作
-
-    //         }
-    //         if (i < this.centerToEdge + 1) {
-    //             cnt++;
-    //         } else {
-    //             cnt--;
-    //         }
-    //     }
-    // }
 
     public left(): void {
 

@@ -4,6 +4,7 @@ import {ShapeCreator} from "./ShapeCreator";
 import { GridPool } from "./GridPool";
 import { GameControl } from "../GameControl";
 import { GridControl } from "./GridControl";
+import { GridAnimal } from "../Animal/GridAnimal";
 
 const { ccclass, property } = cc._decorator;
 
@@ -28,7 +29,8 @@ export class GameScene extends cc.Component {
     public nodePool: GridPool = null;
     public position: Position = null;
     public gridArray: Array<cc.Node> = new Array<cc.Node>();
-    //public gridPosArray: Array<cc.Vec2> = new Array<cc.Vec2>();
+    public gridAnimal: GridAnimal = null;
+    public gridAnimalArray: cc.Node[][] = null;
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
@@ -49,6 +51,11 @@ export class GameScene extends cc.Component {
         this.gameControl = new GameControl(this);
         //生成方块控制
         this.gridControl = new GridControl(this);
+        
+        //创建特效模块
+        this.gridAnimal = new GridAnimal(this);
+        //获取特效数组引用
+        this.gridAnimalArray = this.gridAnimal.gridAnimalArray;
     }
 
     public gridAddToArray(pos: cc.Vec2): void {
@@ -58,6 +65,7 @@ export class GameScene extends cc.Component {
         //将方块放入方块数组
         this.gridArray.push(tempGrid);
     }
+
     //将方块渲染上画板
     public drawGrid(): void {
         let pos: cc.Vec2[][] = this.position.realPos;
@@ -68,7 +76,6 @@ export class GameScene extends cc.Component {
                 } else {
                     //将坐标赋值给方块坐标
                     this.gridAddToArray(pos[i][j]);
-                    //this.gridPosArray.push(pos[i][j]);
                 }
             }
         }
@@ -107,5 +114,20 @@ export class GameScene extends cc.Component {
         let tempNode: cc.Node = this.shapeCeartor.creatorShape(style);
         this.node.addChild(tempNode);
         tempNode.position = this.gridArray[index].position;
+
+        //加入动画组
+        let pos: cc.Vec2 = this.gameControl.arrayIndexToMaze(index);
+        this.gridAnimal.addToAnimalArray(tempNode, pos);
+
+
+
+        /*----------------------------用于单元测试--------------------------*/
+        //this.unitTest();
+    }
+
+
+
+    public unitTest(): cc.Vec2 {
+        return this.gameControl.arrayIndexToMaze(12);
     }
 }
