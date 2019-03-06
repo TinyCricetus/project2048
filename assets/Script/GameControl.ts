@@ -160,12 +160,13 @@ export class GameControl {
         if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY) {
             //这里编辑落子程序
             let index = this.mazeToArrayIndex(this.placePos);
-            this.gameScene.addGridToScene(this.gameGrid.children[0], index);
+            //注意这里的顺序，不能随意置换
             this.canPlace = false;
             this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
+            this.gameScene.addGridToScene(this.gameGrid.children[0], index);
             cc.log("落子成功！");
             //落子后激活方块生产区域
-            let num: number = Math.floor(Math.random() * 1000) % 10 + 1;//随机款式测试
+            let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
             this.gameScene.creatorGrid(num);
         } else {
             return;

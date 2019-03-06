@@ -4,7 +4,8 @@ import {ShapeCreator} from "./ShapeCreator";
 import { GridPool } from "./GridPool";
 import { GameControl } from "../GameControl";
 import { GridControl } from "./GridControl";
-import { GridAnimal } from "../Animal/GridAnimal";
+import { GridAnimalControl } from "../Animal/GridAnimalControl";
+import { FULL } from "./GridData";
 
 const { ccclass, property } = cc._decorator;
 
@@ -29,8 +30,9 @@ export class GameScene extends cc.Component {
     public nodePool: GridPool = null;
     public position: Position = null;
     public gridArray: Array<cc.Node> = new Array<cc.Node>();
-    public gridAnimal: GridAnimal = null;
+    public gridAnimalControl: GridAnimalControl = null;
     public gridAnimalArray: cc.Node[][] = null;
+    public theMaxStyle: number = 1;
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
@@ -53,9 +55,9 @@ export class GameScene extends cc.Component {
         this.gridControl = new GridControl(this);
         
         //创建特效模块
-        this.gridAnimal = new GridAnimal(this);
+        this.gridAnimalControl = new GridAnimalControl(this);
         //获取特效数组引用
-        this.gridAnimalArray = this.gridAnimal.gridAnimalArray;
+        this.gridAnimalArray = this.gridAnimalControl.gridAnimalArray;
     }
 
     public gridAddToArray(pos: cc.Vec2): void {
@@ -101,7 +103,7 @@ export class GameScene extends cc.Component {
     }
 
     /**
-     * 主场景落子函数
+     * 联系控制棋盘的主场景落子函数
      * @param node 落子的对象
      * @param pos 在方块数组中的位置
      */
@@ -111,22 +113,45 @@ export class GameScene extends cc.Component {
         //cc.log(style);
         node.parent.removeAllChildren();
         this.nodePool.putNode(node);
+        this.addGrid(index, style);
+
+        /*----------------------------用于单元测试--------------------------*/
+        //this.unitTest();
+    }
+
+    /**
+     * 此函数用于创建方块并加入主场景和动画数组
+     * @param index 
+     * @param style 
+     */
+    public addGrid(index: number, style: number) {
         let tempNode: cc.Node = this.shapeCeartor.creatorShape(style);
         this.node.addChild(tempNode);
         tempNode.position = this.gridArray[index].position;
 
         //加入动画组
         let pos: cc.Vec2 = this.gameControl.arrayIndexToMaze(index);
-        this.gridAnimal.addToAnimalArray(tempNode, pos);
-
-
-
-        /*----------------------------用于单元测试--------------------------*/
-        //this.unitTest();
+        this.gridAnimalControl.addToAnimalArray(tempNode, pos);
     }
 
+    /**
+     * 单独落子函数
+     * @param pos 下落结点在棋盘中的数组位置
+     * @param style 下落结点的风格
+     */
+    public addAloneGridToScene(pos: cc.Vec2, style: number) {
+        let index = this.gameControl.mazeToArrayIndex(pos);
+        if (style >= 11) {
+            cc.log("2048是可以爆炸的！");
+            style = 11;
+        }
+        //记录一下已经存在的更大的数字
+        this.theMaxStyle = this.theMaxStyle > style ? this.theMaxStyle : style;
+        this.addGrid(index, style);
+        this.position.maze[pos.x][pos.y] = FULL;
+    }
 
-
+    //用于单元测试的测试函数，勿动
     public unitTest(): cc.Vec2 {
         return this.gameControl.arrayIndexToMaze(12);
     }
