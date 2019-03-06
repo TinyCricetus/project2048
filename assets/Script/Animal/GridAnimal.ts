@@ -39,7 +39,7 @@ export class GridAnimal {
         let destination: cc.Vec2 = keyNode.position;
 
         for (let i = 0; i < gridArray.length; i++) {
-            gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination), 
+            gridArray[i].runAction(cc.sequence(cc.moveTo(0.2, destination), 
                 cc.callFunc(this.continueFlag, this)));
         }
 

@@ -108,6 +108,8 @@ export class GameScene extends cc.Component {
      * @param pos 在方块数组中的位置
      */
     public addGridToScene(node: cc.Node, index: number): void {
+        //注意从关联落子的地方是消除限制是3
+        this.gridAnimalControl.dismissLimit = 2;
         //node.position = this.gridArray[index].position;
         let style = node.getComponent("Grid").getStyle();
         //cc.log(style);
@@ -140,6 +142,8 @@ export class GameScene extends cc.Component {
      * @param style 下落结点的风格
      */
     public addAloneGridToScene(pos: cc.Vec2, style: number) {
+        //注意从合成落子的地方是消除限制是2
+        this.gridAnimalControl.dismissLimit = 1;
         let index = this.gameControl.mazeToArrayIndex(pos);
         if (style >= 11) {
             cc.log("2048是可以爆炸的！");
