@@ -20,6 +20,7 @@ export class GridAnimalControl {
     public shiftValue: number = 0.5;//设定数组偏移值
 
     public toolArray: cc.Vec2[][] = null;//工具数组,用于进行偏移,专门用于计算六边形的周围格子
+    public dimissControl: number = 0;//用于控制1型和234型不同的消除扫描
 
     //构造函数
     constructor(gameScene: GameScene) {
@@ -66,7 +67,13 @@ export class GridAnimalControl {
     public addToAnimalArray(node: cc.Node, pos: cc.Vec2) {
         this.gridAnimalArray[pos.x][pos.y] = node;
 
-        //每一次加入结点，都应该扫描一次以确认是否产生消除
+        //每一次加入结点，都应该扫描一次以确认是否产生消除,如果是234型，应该加入两次才扫描一次
+        if (this.gameScene.combineGridType != 1 && this.dimissControl == 1) {
+            this.dimissControl = 0;
+            return ;
+        } else {
+            this.dimissControl = 1;
+        }
         let dimissCount = this.scanAnimalArray(pos);
         if (dimissCount > this.dismissLimit) {
             cc.log("是时候一波消除了!");

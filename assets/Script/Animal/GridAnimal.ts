@@ -2,6 +2,7 @@ import { EMPTY } from "../GameBoard/GridData";
 import { GridPool } from "../GameBoard/GridPool";
 import { Grid } from "../GameBoard/Grid";
 import { GridAnimalControl } from "./GridAnimalControl";
+import { GameScene } from "../GameBoard/GameScene";
 
 
 export class GridAnimal {

@@ -62,7 +62,7 @@ export class GameScene extends cc.Component {
         
         //创造一个联合方块
         let style: number[] = [1, 2];
-        this.creatorCombineGrid(style, 2);
+        this.creatorCombineGrid(style, 3);
 
         //生成游戏主逻辑控制
         this.gameControl = new GameControl(this);
@@ -176,7 +176,7 @@ export class GameScene extends cc.Component {
         //node.position = this.gridArray[index].position;
         let style = node.getComponent("Grid").getStyle();
         //cc.log(style);
-        node.parent.removeAllChildren();
+        node.parent.removeChild(node);
         this.nodePool.putNode(node);
         this.addGrid(index, style);
 

@@ -81,9 +81,24 @@ export class GridControl {
         //一旦松开，控制器因该马上回到形状发生器位置
         this.gameGrid.position = this.initPosNode.position;
         //一旦松开，先判断坐标再执行落子操作
+        let judge_1: boolean = false;
+        let judge_2: boolean = false;
         let pos: cc.Vec2 = this.gameScene.node.convertToNodeSpaceAR(event.getLocation());
-        let judge: boolean = this.judgeMoveToChess(pos);
-        if (judge) {
+        if (this.gameScene.combineGridType == 1) {
+            judge_1 = this.judgeMoveToChess(pos);
+            judge_2 = true;
+        } else {
+            let pos_1: cc.Vec2 = pos.add(this.gameGrid.children[0].position);
+            let pos_2: cc.Vec2 = pos.add(this.gameGrid.children[1].position);
+            judge_1 = this.judgeMoveToChess(pos_1);
+            judge_2 = this.judgeMoveToChess(pos_2);
+
+            cc.log(pos_1 + " " + pos_2);
+        }
+        if (this.gameScene.combineGridType < 1 || this.gameScene.combineGridType > 4) {
+            cc.log("类型错误!");
+        }
+        if (judge_1 && judge_2) {
             this.gameScene.gameControl.moveToChess();
         }
     }

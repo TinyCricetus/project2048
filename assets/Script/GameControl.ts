@@ -202,19 +202,74 @@ export class GameControl {
     }
 
     public moveToChess(): void {
-        if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY) {
-            //这里编辑落子程序
-            let index = this.mazeToArrayIndex(this.placePos);
-            //注意这里的顺序，不能随意置换
-            this.canPlace = false;
-            this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
-            this.gameScene.addGridToScene(this.gameGrid.children[0], index);
-            cc.log("落子成功！");
-            //落子后激活方块生产区域
-            let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
+        if (this.gameScene.combineGridType == 1) {
+            if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY) {
+                //这里编辑落子程序
+                let index = this.mazeToArrayIndex(this.placePos);
+                //注意这里的顺序，不能随意置换
+                this.canPlace = false;
+                this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
+                this.gameScene.addGridToScene(this.gameGrid.children[0], index);
+                cc.log("落子成功！");
+                //生成新方块
+                this.craetorGrid();
+            }
+        } else {
+            if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY && 
+                this.scanMaze[this.placePos_2.x][this.placePos_2.y] == EMPTY) {
+                //这里编辑落子程序
+                let index = this.mazeToArrayIndex(this.placePos);
+                let index_2 = this.mazeToArrayIndex(this.placePos_2);
+                //注意这里的顺序，不能随意置换
+                this.canPlace = false;
+                this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
+                this.scanMaze[this.placePos_2.x][this.placePos_2.y] = FULL;
+                //注意第一个子节点会被删除
+                this.gameScene.addGridToScene(this.gameGrid.children[0], index);
+                this.gameScene.addGridToScene(this.gameGrid.children[0], index_2);
+                cc.log("落子成功！");
+                this.craetorGrid();
+            }
+        }
+    }
+
+    public craetorGrid() {
+        //落子后激活方块生产区域
+        let numType: number = Math.floor(Math.random() * 1000) % 2;//随机类型
+        let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
+        if (numType == 0) {
+            //生成一型号方块
             this.gameScene.creatorGrid(num);
         } else {
-            return;
+            //生成234型号方块
+            let type: number = Math.floor(Math.random() * 1000) % 3 + 2;
+            this.gameScene.creatorCombineGrid([num, (num + 1) % 11 + 1], type);
+        }
+    }
+
+    /**
+     * 给与234型第一块方块，返回第二块方块的数组位置
+     * @param pos 
+     * @param type 
+     */
+    public getAnotherGrid(pos: cc.Vec2, type: number): cc.Vec2 {
+        let temp: cc.Vec2 = this.gameScene.gridAnimalControl.chaneToShiftPos(pos);
+        let aroundArray: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(temp);
+        switch(type) {
+            case 2:
+            return aroundArray[3];
+            break;
+
+            case 3:
+            return aroundArray[5];
+            break;
+
+            case 4:
+            return aroundArray[4];
+            break;
+
+            default: 
+            break;
         }
     }
 }
