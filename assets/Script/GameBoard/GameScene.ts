@@ -23,6 +23,8 @@ export class GameScene extends cc.Component {
     shapeCraetor: cc.Node = null;//用于获取形状生成器的位置信息
     @property(cc.Node)
     gameGrid: cc.Node = null;//管理方块的结点
+    @property(cc.Label)
+    scoreDisplay: cc.Label = null;//用于控制分数显示
 
     public gridControl: GridControl = null;
     public shapeCeartor: ShapeCreator = null;//形状生成器
@@ -33,6 +35,7 @@ export class GameScene extends cc.Component {
     public gridAnimalControl: GridAnimalControl = null;
     public gridAnimalArray: cc.Node[][] = null;
     public theMaxStyle: number = 1;
+    public score: number = 0;
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
@@ -58,7 +61,18 @@ export class GameScene extends cc.Component {
         this.gridAnimalControl = new GridAnimalControl(this);
         //获取特效数组引用
         this.gridAnimalArray = this.gridAnimalControl.gridAnimalArray;
+        //分数归零！
+        this.score = 0;
+        this.scoreDisplay.string = `${this.score}`;
     }
+
+    // /**
+    //  * 每帧刷新应该执行的操作
+    //  * @param dt 每帧刷新的时间间隔
+    //  */
+    // public update(dt) {
+        
+    // }
 
     public gridAddToArray(pos: cc.Vec2): void {
         let tempGrid: cc.Node = null;

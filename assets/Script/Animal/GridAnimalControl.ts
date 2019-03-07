@@ -1,6 +1,7 @@
 import { GameScene } from "../GameBoard/GameScene";
 import { GridAnimal } from "./GridAnimal";
 import { EMPTY } from "../GameBoard/GridData";
+import { ScoreTable } from "../Score/ScoreTable";
 
 export class GridAnimalControl {
 
@@ -13,6 +14,8 @@ export class GridAnimalControl {
     public centerPoint: cc.Vec2 = null;
     public gridAnimal: GridAnimal = null;
     public dismissLimit: number = 0;
+    public multipleRecord: number = 0;
+    public addScore: number = 0;//当前消除增加的分数
 
     public shiftValue: number = 0.5;//设定数组偏移值
 
@@ -67,11 +70,23 @@ export class GridAnimalControl {
         let dimissCount = this.scanAnimalArray(pos);
         if (dimissCount > this.dismissLimit) {
             cc.log("是时候一波消除了!");
+            //确认消除，开始消除有关操作
             this.addToDismissArray();
+            this.figureOutScore(this.dismissLimit, this.gridDismissArray.length,
+                node.getComponent("Grid").getStyle());
+            //更新分数
+            this.updateScore();
             this.gridAnimal.startToDismiss(node, pos, this.gridDismissArray, 
                 this.gameScene.nodePool);
             this.clearPosition();
         }
+    }
+
+    public updateScore() {
+        //放置方块之后更新分数
+        this.gameScene.score  += this.addScore;
+        this.gameScene.scoreDisplay.string = `${this.gameScene.score}`;
+        cc.log(this.gameScene.scoreDisplay.string);
     }
 
     //在GridAnimal中运用,动画执行完毕之后增加方块
@@ -224,5 +239,17 @@ export class GridAnimalControl {
     //将带有偏移值的坐标转换为正常坐标
     public changeToStandardPos(pos: cc.Vec2): cc.Vec2 {
         return cc.v2(pos.x, pos.y - Math.abs(pos.x - this.centerPoint.x) * 0.5);
+    }
+
+
+    public figureOutScore(dismissLimit: number, nodeCount: number, gridNumber: number) {
+        //如果是用户点击落子的话，消除限制是2， 如果是电脑合成落子的话，消除限制是1
+        if (dismissLimit == 2) {
+            this.multipleRecord = 1;
+        } else {
+            this.multipleRecord += 1;
+        }
+        this.addScore = ScoreTable.times[this.multipleRecord] * ScoreTable.multiple[nodeCount] 
+        * ScoreTable.basicScore[gridNumber]; 
     }
 }

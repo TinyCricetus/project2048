@@ -41,7 +41,7 @@ export class ScoreTable {
     };
 
 
-    public times: {[key: number]: number} = {
+    public static times: {[key: number]: number} = {
         0   : 1,
         1   : 1,
         2   : 2,
