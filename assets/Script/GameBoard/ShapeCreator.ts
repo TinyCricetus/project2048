@@ -1,6 +1,7 @@
 import { CustomSkin } from "../Skin/CustomSkin";
 import { GridPool } from "./GridPool";
 import { ScoreTable } from "../Score/ScoreTable";
+import { SkinDef } from "../Skin/SkinDef";
 
 export class ShapeCreator {
 
@@ -29,4 +30,24 @@ export class ShapeCreator {
 
         return tempNode;
     }
+
+    /**
+     * 创建联合方块数组
+     * @param style 风格数组
+     */
+    public creatorCombineShape(style: number[]): cc.Node[] {
+        let tempNode: cc.Node[] = [];
+
+        for (let i = 0; i < style.length; i++) {
+            tempNode[i] = this.pool.getNode();
+            tempNode[i].getComponent("Grid").init(style[i]);
+            CustomSkin.getSkin(tempNode[i], style[i]);
+            let tempChildNode: cc.Node = tempNode[i].children[0];
+            tempChildNode.getComponent(cc.Label).string = ScoreTable.gridNumber[style[i]];
+        }
+
+        return tempNode;
+    }
+
+
 }

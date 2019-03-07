@@ -1,5 +1,5 @@
 import { Grid } from "./Grid";
-import { CORRECTVALUE, CANNOTPLACE, EMPTY } from "./GridData";
+import { CORRECTVALUE, CANNOTPLACE, EMPTY, WIDTH } from "./GridData";
 
 /**
  * 用于建立游戏格局坐标,本游戏采用六边形坐标
@@ -107,19 +107,32 @@ export class Position extends cc.Component {
         }
     }
 
-    public left(): void {
-
-    }
-
-    public right(): void {
-
-    }
-
-    public up(): void {
-
-    }
-
-    public down(): void {
-
+    /**
+     * 2、3、4型坐标模式设定
+     * @param node 需要设定坐标的结点数组
+     * @param type 指定坐标类型
+     */
+    public fitPosition(node: cc.Node[], type: number) {
+        let posLeft: cc.Vec2 = null;
+        let posRight: cc.Vec2 = null;
+        if (type == 2) {
+            //横型坐标
+            posLeft = cc.v2(-(this.oneStepRow / 2) , 0);
+            posRight = cc.v2(this.oneStepRow / 2, 0);
+        } else if (type == 3) {
+            //左上至右下型坐标
+            posLeft = cc.v2(-(WIDTH / 4), this.oneStepCol / 2);
+            posRight = cc.v2((WIDTH / 4), -(this.oneStepCol / 2));
+        } else if (type == 4) {
+            //右上至左下型坐标
+            posLeft = cc.v2(WIDTH / 4, this.oneStepCol / 2);
+            posRight = cc.v2(-(WIDTH / 4), -(this.oneStepCol / 2));
+        } else {
+            cc.log("坐标匹配类型出错！");
+            return ;
+        }
+        node[0].position = posLeft;
+        node[1].position = posRight;
+        return ;
     }
 }

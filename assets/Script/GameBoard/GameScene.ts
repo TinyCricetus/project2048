@@ -36,6 +36,8 @@ export class GameScene extends cc.Component {
     public gridAnimalArray: cc.Node[][] = null;
     public theMaxStyle: number = 1;
     public score: number = 0;
+    public isCombineGrid: boolean = null;
+    public combineGridType = 0;
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
@@ -50,8 +52,18 @@ export class GameScene extends cc.Component {
         this.position.positionInit(this.centerToEdge == 0 ? 2 : this.centerToEdge);
         //布置方块背景
         this.drawGrid();
-        //创造一个方块
-        this.creatorGrid(1);
+        //初始化，第一个方块不给联合类型
+        this.isCombineGrid = false;
+        //初始化第一个方块类型为1型
+        this.combineGridType = 1;
+
+        // //创造一个方块
+        // this.creatorGrid(1);
+        
+        //创造一个联合方块
+        let style: number[] = [1, 2];
+        this.creatorCombineGrid(style, 2);
+
         //生成游戏主逻辑控制
         this.gameControl = new GameControl(this);
         //生成方块控制
@@ -110,11 +122,48 @@ export class GameScene extends cc.Component {
      * 创造方块并加入到方块产生区
      */
     public creatorGrid(style: number): void {
+        //设置为非联合类型
+        this.isCombineGrid = false;
+        this.combineGridType = 1;
         let tempNode: cc.Node = null;
         tempNode = this.shapeCeartor.creatorShape(style);
         tempNode.position = cc.v2(0, 0);
         this.gameGrid.addChild(tempNode);
     }
+
+    /**
+     * 创造联合方块并加入到生产区
+     * @param style 
+     * @param type 
+     */
+    public creatorCombineGrid(style: number[], type: number) {
+        //设置为联合类型
+        this.isCombineGrid = true;
+        this.combineGridType = type;
+        let tempNode: cc.Node[] = [];
+        tempNode = this.shapeCeartor.creatorCombineShape(style);
+        switch(type) {
+            case 2:
+            this.position.fitPosition(tempNode, 2);
+            break;
+
+            case 3:
+            this.position.fitPosition(tempNode, 3);
+            break;
+
+            case 4:
+            this.position.fitPosition(tempNode, 4);
+            break;
+
+            default:break;
+        }
+        for (let i = 0; i < tempNode.length; i++) {
+            this.gameGrid.addChild(tempNode[i]);
+        }
+    }
+
+
+
 
     /**
      * 联系控制棋盘的主场景落子函数
@@ -172,5 +221,12 @@ export class GameScene extends cc.Component {
     //用于单元测试的测试函数，勿动
     public unitTest(): cc.Vec2 {
         return this.gameControl.arrayIndexToMaze(12);
+    }
+
+    /**
+     * 加入联合方块
+     */
+    public addCombineGridToScene() {
+
     }
 }

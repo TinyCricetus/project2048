@@ -241,6 +241,10 @@ export class GridAnimalControl {
         return cc.v2(pos.x, pos.y - Math.abs(pos.x - this.centerPoint.x) * 0.5);
     }
 
+    public chaneToShiftPos(pos: cc.Vec2): cc.Vec2 {
+        return cc.v2(pos.x, pos.y + Math.abs(pos.x - this.centerPoint.x) * 0.5);
+    }
+
 
     public figureOutScore(dismissLimit: number, nodeCount: number, gridNumber: number) {
         //如果是用户点击落子的话，消除限制是2， 如果是电脑合成落子的话，消除限制是1

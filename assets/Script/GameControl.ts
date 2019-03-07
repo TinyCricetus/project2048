@@ -23,6 +23,7 @@ export class GameControl {
     public canPlace: boolean = false;
     //落子数组位置记录
     public placePos: cc.Vec2 = null;
+    public placePos_2: cc.Vec2 = null;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -47,6 +48,7 @@ export class GameControl {
         this.canPlace = false;
         //初始化落子位置记录
         this.placePos = cc.v2();
+        this.placePos_2 = cc.v2();
     }
 
 
@@ -76,12 +78,43 @@ export class GameControl {
         }
         //cc.log(sign);
         //如果判定重合就把背景变换状态，未重合就恢复
-        if (sign != -1 && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY) {
-            this.changeGridState(sign);
+        if (sign != -1 && this.judgeEmpty()) {
+            if (this.gameScene.combineGridType == 1) {
+                this.changeGridState(sign);
+            } else {
+                let sign_2: number = this.mazeToArrayIndex(this.placePos_2);
+                this.changeCombineGridState([sign, sign_2]);
+                //cc.log("应该变浅的是方格：" + sign + " " + sign_2);
+            }
             this.canPlace = true;
         } else {
             this.changeGridState(-1);
         }
+    }
+
+    public judgeEmpty(): boolean {
+        let type: number = this.gameScene.combineGridType;
+        let aroundPos: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(
+            this.gameScene.gridAnimalControl.chaneToShiftPos(this.placePos));
+        if (type == 1) {
+            return this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY;
+        }
+        if (type == 2) {
+            this.placePos_2 = aroundPos[3];
+            return ((this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY)
+                && (this.scanMaze[aroundPos[3].x][aroundPos[3].y] == EMPTY));
+        }
+        if (type == 3) {
+            this.placePos_2 = aroundPos[5];
+            return ((this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY)
+                && (this.scanMaze[aroundPos[5].x][aroundPos[5].y] == EMPTY));
+        }
+        if (type == 4) {
+            this.placePos_2 = aroundPos[4];
+            return ((this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY)
+                && (this.scanMaze[aroundPos[4].x][aroundPos[4].y] == EMPTY));
+        }
+        return false;
     }
 
 
@@ -96,13 +129,25 @@ export class GameControl {
         }
     }
 
+    public changeCombineGridState(index: number[]) {
+        for (let i = 0; i < this.bgGridArray.length; i++) {
+            if (i == index[0] || i == index[1]) {
+                this.bgGridArray[i].opacity = SHALLOW;
+            } else {
+                this.bgGridArray[i].opacity = NORMAL;
+            }
+        }
+    }
+
     /**
      * 判断当前中心坐标是否与背景方块重合
      * @param pos 
      */
     public isContain(pos: cc.Vec2): boolean {
-        //正在操控方块的坐标信息
-        let tempPos = this.gameGrid.position;
+        //正在操控方块的坐标信息,注意使用时应该注意转换
+        let tempPos = this.gameGrid.convertToWorldSpaceAR(this.gameGrid.children[0].position);
+        tempPos = this.gameScene.node.convertToNodeSpaceAR(tempPos);
+        //cc.log("正在操控的坐标为: + " + tempPos);
         if ((Math.abs(pos.x - tempPos.x) < WIDTH / 2) &&
             (Math.abs(pos.y - tempPos.y) < HEIGHT / 2)) {
             return true;
