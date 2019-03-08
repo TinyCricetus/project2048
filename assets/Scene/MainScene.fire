@@ -504,7 +504,7 @@
       "__id__": 11
     },
     "_enabled": true,
-    "duration": 5
+    "duration": 3
   },
   {
     "__type__": "cc.Sprite",

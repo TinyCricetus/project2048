@@ -238,6 +238,9 @@ export class GameControl {
         //落子后激活方块生产区域
         let numType: number = Math.floor(Math.random() * 1000) % 2;//随机类型
         let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
+        if (num >= 9) {
+            num -= numType + 3;
+        }
         if (numType == 0) {
             //生成一型号方块
             this.gameScene.creatorGrid(num);

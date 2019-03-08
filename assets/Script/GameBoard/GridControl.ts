@@ -13,7 +13,7 @@ export class GridControl {
     public pos: cc.Vec2 = null;
     public actionFlag: boolean = true;
 
-    private canDrag: boolean = false;//拖动
+    public canDrag: boolean = false;//拖动
     private canRotate: boolean = false;//旋转
 
     private gridRealPos: cc.Vec2[][] = null;

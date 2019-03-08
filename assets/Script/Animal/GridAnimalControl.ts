@@ -67,6 +67,9 @@ export class GridAnimalControl {
      * 联合数组加入动画数组
      */
     public addCombineToAnimalArray(node: cc.Node[], pos: cc.Vec2[]) {
+        // //动画启动时禁止拖动
+        // this.gameScene.gridControl.canDrag = false;
+        
         this.combineGrid = node;
         this.combinePos = pos;
         for (let i = 0; i < pos.length; i++) {
@@ -117,15 +120,20 @@ export class GridAnimalControl {
      * @param node 要加入的结点
      * @param pos 加入结点在二维数组中的位置
      */
-    public addToAnimalArray(node: cc.Node, pos: cc.Vec2) {
+    public addToAnimalArray(node: cc.Node, pos: cc.Vec2, callback: Function) {
         this.gridAnimalArray[pos.x][pos.y] = node;
 
         //每一次加入结点，都应该扫描一次以确认是否产生消除,如果是234型，应该加入两次才扫描一次
         let gridType: number = node.getComponent("Grid").gridType;
         
-        
+        // //动画启动时禁止拖动
+        // this.gameScene.gridControl.canDrag = false;
+
         if (this.judgeDismiss(node, pos)) {
             this.dismissGrid(node, pos);
+        } else {
+            //当检测到不需要继续合并时，234型方块开始检测另外一块
+            callback && callback();
         }
     }
 
@@ -164,10 +172,10 @@ export class GridAnimalControl {
     }
 
     //在GridAnimal中运用,动画执行完毕之后增加方块
-    public addLevelUpGridToScene(style: number, pos: cc.Vec2, type: number) {
+    public addLevelUpGridToScene(style: number, pos: cc.Vec2, type: number, callback: Function) {
         //清空消除方块的地图标记之后记得在地图加上合成方块
         // let style: number = node.getComponent("Grid").getStyle();
-        this.gameScene.addAloneGridToScene(pos, style + 1, type);
+        this.gameScene.addAloneGridToScene(pos, style + 1, type, callback);
     }
 
     /**

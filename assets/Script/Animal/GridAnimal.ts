@@ -15,7 +15,7 @@ export class GridAnimal {
     public keyNodeStyle: number = 0;
     public nodeMazePos: cc.Vec2 = null;
     public pool: GridPool = null;
-    public gridAnimalControl = null;
+    public gridAnimalControl: GridAnimalControl = null;
     public keyNodeType: number = 0;
     public length: number = 0;
 
@@ -61,9 +61,15 @@ export class GridAnimal {
             //删除包括自身在内的参与合成的结点
             this.deleteNode();
             //加入合成结点
-            this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType);
-            //用于回调结束时进行额外的操作
-            this.extra();
+            this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType, function() {
+                if (this.keyNodeType != 1) {
+                    //用于回调结束时联合方块进行额外的操作
+                    this.extra();
+                }
+            });
+           
+            // //恢复拖动
+            // this.gridAnimalControl.gameScene.gridControl.canDrag = true;
         }
     }
 

@@ -2,7 +2,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export class CircleAnimal extends cc.Component {
     
     @property
     duration: number = 0;

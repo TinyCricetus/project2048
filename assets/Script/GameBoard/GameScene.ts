@@ -230,7 +230,7 @@ export class GameScene extends cc.Component {
         //cc.log(style);
         node.parent.removeChild(node);
         this.nodePool.putNode(node);
-        this.addGrid(index, style, type);
+        this.addGrid(index, style, type, null);
 
         /*----------------------------用于单元测试--------------------------*/
         //this.unitTest();
@@ -241,14 +241,14 @@ export class GameScene extends cc.Component {
      * @param index 
      * @param style 
      */
-    public addGrid(index: number, style: number, type: number) {
+    public addGrid(index: number, style: number, type: number, callback: Function) {
         let tempNode: cc.Node = this.shapeCeartor.creatorShape(style, type);
         this.node.addChild(tempNode);
         tempNode.position = this.gridArray[index].position;
 
         //加入动画组
         let pos: cc.Vec2 = this.gameControl.arrayIndexToMaze(index);
-        this.gridAnimalControl.addToAnimalArray(tempNode, pos);
+        this.gridAnimalControl.addToAnimalArray(tempNode, pos, callback);
     }
 
     /**
@@ -256,7 +256,7 @@ export class GameScene extends cc.Component {
      * @param pos 下落结点在棋盘中的数组位置
      * @param style 下落结点的风格
      */
-    public addAloneGridToScene(pos: cc.Vec2, style: number, type) {
+    public addAloneGridToScene(pos: cc.Vec2, style: number, type, callback: Function) {
         //注意从合成落子的地方是消除限制是2
         this.gridAnimalControl.dismissLimit = 1;
         let index = this.gameControl.mazeToArrayIndex(pos);
@@ -266,7 +266,7 @@ export class GameScene extends cc.Component {
         }
         //记录一下已经存在的更大的数字
         this.theMaxStyle = this.theMaxStyle > style ? this.theMaxStyle : style;
-        this.addGrid(index, style, type);
+        this.addGrid(index, style, type, callback);
         this.position.maze[pos.x][pos.y] = FULL;
     }
 
