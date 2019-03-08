@@ -12,18 +12,22 @@ export class Grid extends cc.Component {
     @property(cc.Integer)
     style: number = 0;//方块风格
 
+    public gridType: number = 0;
 
     //格子的宽和高
     private width: number = WIDTH;
     private height: number = HEIGHT;
     private distance: number = DISTANCE;
 
+
     /**
      * 方块初始化
      * @param style 方块风格
      */
-    public init(style: number): void {
+    public init(style: number, type: number): void {
         this.style = style;
+        this.gridType = type;
+        this.node.rotation = 0;
     }
 
     public setStyle(style: number): void {

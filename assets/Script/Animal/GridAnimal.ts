@@ -1,4 +1,4 @@
-import { EMPTY } from "../GameBoard/GridData";
+import { EMPTY, FULL } from "../GameBoard/GridData";
 import { GridPool } from "../GameBoard/GridPool";
 import { Grid } from "../GameBoard/Grid";
 import { GridAnimalControl } from "./GridAnimalControl";
@@ -16,6 +16,8 @@ export class GridAnimal {
     public nodeMazePos: cc.Vec2 = null;
     public pool: GridPool = null;
     public gridAnimalControl = null;
+    public keyNodeType: number = 0;
+    public length: number = 0;
 
     constructor(gridAnimalContrtrol: GridAnimalControl) {
         this.gridAnimalControl = gridAnimalContrtrol;
@@ -36,8 +38,10 @@ export class GridAnimal {
         this.keyNode = keyNode;
         this.keyNodeStyle = this.keyNode.getComponent("Grid").getStyle();
         this.nodeMazePos = pos;
+        this.keyNodeType = this.keyNode.getComponent("Grid").gridType;
         this.pool = pool;
         let destination: cc.Vec2 = keyNode.position;
+        this.length = gridArray.length;
 
         for (let i = 0; i < gridArray.length; i++) {
             gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination), 
@@ -53,9 +57,13 @@ export class GridAnimal {
 
     public continueFlag() {
         this.canContinue++;
-        if (this.canContinue == this.gridArray.length) {
+        if (this.canContinue == this.length) {
+            //删除包括自身在内的参与合成的结点
             this.deleteNode();
-            this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos);
+            //加入合成结点
+            this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType);
+            //用于回调结束时进行额外的操作
+            this.extra();
         }
     }
 
@@ -65,5 +73,9 @@ export class GridAnimal {
             rootNode.removeChild(this.gridArray[i]);
             this.pool.putNode(this.gridArray[i]);
         }
+    }
+
+    public extra() {
+        this.gridAnimalControl.nextStep();
     }
 }

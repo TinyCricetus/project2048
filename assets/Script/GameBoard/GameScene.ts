@@ -57,12 +57,12 @@ export class GameScene extends cc.Component {
         //初始化第一个方块类型为1型
         this.combineGridType = 1;
 
-        // //创造一个方块
-        // this.creatorGrid(1);
+        //创造一个方块
+        this.creatorGrid(1);
         
-        //创造一个联合方块
-        let style: number[] = [1, 2];
-        this.creatorCombineGrid(style, 3);
+        // //创造一个联合方块
+        // let style: number[] = [1, 2];
+        // this.creatorCombineGrid(style, 3);
 
         //生成游戏主逻辑控制
         this.gameControl = new GameControl(this);
@@ -126,8 +126,9 @@ export class GameScene extends cc.Component {
         this.isCombineGrid = false;
         this.combineGridType = 1;
         let tempNode: cc.Node = null;
-        tempNode = this.shapeCeartor.creatorShape(style);
+        tempNode = this.shapeCeartor.creatorShape(style, 1);
         tempNode.position = cc.v2(0, 0);
+        tempNode.rotation = this.gameGrid.rotation;
         this.gameGrid.addChild(tempNode);
     }
 
@@ -141,7 +142,7 @@ export class GameScene extends cc.Component {
         this.isCombineGrid = true;
         this.combineGridType = type;
         let tempNode: cc.Node[] = [];
-        tempNode = this.shapeCeartor.creatorCombineShape(style);
+        tempNode = this.shapeCeartor.creatorCombineShape(style, type);
         switch(type) {
             case 2:
             this.position.fitPosition(tempNode, 2);
@@ -158,10 +159,60 @@ export class GameScene extends cc.Component {
             default:break;
         }
         for (let i = 0; i < tempNode.length; i++) {
+            tempNode[i].rotation = this.gameGrid.rotation;
             this.gameGrid.addChild(tempNode[i]);
         }
     }
 
+
+    /**
+     * 加入联合方块
+     */
+    public addCombineGridToScene(node: cc.Node[], index: number[]) {
+        this.gridAnimalControl.dismissLimit = 2;
+
+        let style: number[] = [];
+        let type: number = 0;
+        for (let i of node) {
+            style.push(i.getComponent("Grid").getStyle());
+            type = i.getComponent("Grid").gridType;
+        }
+
+        let rootNode: cc.Node = node[0].parent;
+        let length: number = rootNode.childrenCount;
+        for (let i = 0; i < length; i++) {
+            let tempNode: cc.Node = rootNode.children[0];
+            rootNode.removeChild(tempNode);
+            this.nodePool.putNode(tempNode);
+        }
+        this.addCombineGrid(index, style, type);
+    }
+
+    public addCombineGrid(index: number[], style: number[], type: number) {
+        // let tempNode: cc.Node = this.shapeCeartor.creatorShape(style, type);
+        // this.node.addChild(tempNode);
+        // tempNode.position = this.gridArray[index].position;
+
+        // //加入动画组
+        // let pos: cc.Vec2 = this.gameControl.arrayIndexToMaze(index);
+        // this.gridAnimalControl.addToAnimalArray(tempNode, pos);
+
+        let tempNode: cc.Node[] = this.shapeCeartor.creatorCombineShape(style, type);
+        for (let i of tempNode) {
+            this.node.addChild(i);
+        }
+
+        for (let i = 0; i < tempNode.length; i++) {
+            tempNode[i].position = this.gridArray[index[i]].position;
+        }
+
+        //加入动画组
+        let pos: cc.Vec2[] = [];
+        for (let i of index) {
+            pos.push(this.gameControl.arrayIndexToMaze(i));
+        }
+        this.gridAnimalControl.addCombineToAnimalArray(tempNode, pos);
+    }
 
 
 
@@ -175,10 +226,11 @@ export class GameScene extends cc.Component {
         this.gridAnimalControl.dismissLimit = 2;
         //node.position = this.gridArray[index].position;
         let style = node.getComponent("Grid").getStyle();
+        let type = node.getComponent("Grid").gridType;
         //cc.log(style);
         node.parent.removeChild(node);
         this.nodePool.putNode(node);
-        this.addGrid(index, style);
+        this.addGrid(index, style, type);
 
         /*----------------------------用于单元测试--------------------------*/
         //this.unitTest();
@@ -189,8 +241,8 @@ export class GameScene extends cc.Component {
      * @param index 
      * @param style 
      */
-    public addGrid(index: number, style: number) {
-        let tempNode: cc.Node = this.shapeCeartor.creatorShape(style);
+    public addGrid(index: number, style: number, type: number) {
+        let tempNode: cc.Node = this.shapeCeartor.creatorShape(style, type);
         this.node.addChild(tempNode);
         tempNode.position = this.gridArray[index].position;
 
@@ -204,7 +256,7 @@ export class GameScene extends cc.Component {
      * @param pos 下落结点在棋盘中的数组位置
      * @param style 下落结点的风格
      */
-    public addAloneGridToScene(pos: cc.Vec2, style: number) {
+    public addAloneGridToScene(pos: cc.Vec2, style: number, type) {
         //注意从合成落子的地方是消除限制是2
         this.gridAnimalControl.dismissLimit = 1;
         let index = this.gameControl.mazeToArrayIndex(pos);
@@ -214,19 +266,12 @@ export class GameScene extends cc.Component {
         }
         //记录一下已经存在的更大的数字
         this.theMaxStyle = this.theMaxStyle > style ? this.theMaxStyle : style;
-        this.addGrid(index, style);
+        this.addGrid(index, style, type);
         this.position.maze[pos.x][pos.y] = FULL;
     }
 
     //用于单元测试的测试函数，勿动
     public unitTest(): cc.Vec2 {
         return this.gameControl.arrayIndexToMaze(12);
-    }
-
-    /**
-     * 加入联合方块
-     */
-    public addCombineGridToScene() {
-
     }
 }

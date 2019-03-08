@@ -224,9 +224,10 @@ export class GameControl {
                 this.canPlace = false;
                 this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
                 this.scanMaze[this.placePos_2.x][this.placePos_2.y] = FULL;
-                //注意第一个子节点会被删除
-                this.gameScene.addGridToScene(this.gameGrid.children[0], index);
-                this.gameScene.addGridToScene(this.gameGrid.children[0], index_2);
+                // //注意第一个子节点会被删除
+                // this.gameScene.addGridToScene(this.gameGrid.children[0], index);
+                // this.gameScene.addGridToScene(this.gameGrid.children[0], index_2);
+                this.gameScene.addCombineGridToScene(this.gameGrid.children, [index, index_2]);
                 cc.log("落子成功！");
                 this.craetorGrid();
             }

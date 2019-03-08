@@ -75,11 +75,16 @@ export class GridControl {
             this.actionFlag = false;
             this.gameGrid.runAction(cc.sequence(cc.rotateBy(1, 180),
                 cc.callFunc(this.judgeAction, this)));
+            //小数字跟着旋转
+            for (let i of this.gameGrid.children) {
+                i.runAction(cc.rotateBy(1, 180));
+            }
             this.canRotate = false;
         }
         this.canDrag = false;
         //一旦松开，控制器因该马上回到形状发生器位置
         this.gameGrid.position = this.initPosNode.position;
+        //this.gameGrid.rotation = 0;//旋转归位
         //一旦松开，先判断坐标再执行落子操作
         let judge_1: boolean = false;
         let judge_2: boolean = false;
@@ -131,5 +136,4 @@ export class GridControl {
         }
         return false;
     }
-
 }
