@@ -1,5 +1,6 @@
 import { GameScene } from "./GameScene";
 import { WIDTH, HEIGHT } from "./GridData";
+import { Grid } from "./Grid";
 
 /**
  * 用于控制方块
@@ -97,8 +98,11 @@ export class GridControl {
             judge_1 = this.judgeMoveToChess(pos);
             judge_2 = true;
         } else {
-            let pos_1: cc.Vec2 = pos.add(this.gameGrid.children[0].position);
-            let pos_2: cc.Vec2 = pos.add(this.gameGrid.children[1].position);
+            //对判断坐标进行提前处理，使得旋转不影响坐标判断
+            let pos_0: cc.Vec2 = this.dealPosition(this.gameGrid.children[0].position, this.gameGrid.children[0].getComponent("Grid").gridType);
+            let pos_1: cc.Vec2 = pos.add(pos_0);
+            pos_0 = this.dealPosition(this.gameGrid.children[1].position, this.gameGrid.children[0].getComponent("Grid").gridType);
+            let pos_2: cc.Vec2 = pos.add(pos_0);
             judge_1 = this.judgeMoveToChess(pos_1);
             judge_2 = this.judgeMoveToChess(pos_2);
 
@@ -109,6 +113,16 @@ export class GridControl {
         }
         if (judge_1 && judge_2) {
             this.gameScene.gameControl.moveToChess();
+        }
+    }
+
+    public dealPosition(pos: cc.Vec2, gridType: number): cc.Vec2{
+        if (gridType == 2) {
+            return cc.v2(-pos.x, pos.y);
+        } else if (gridType == 3 || gridType == 4) {
+            return cc.v2(-pos.x, -pos.y);
+        } else {
+            return pos;
         }
     }
 

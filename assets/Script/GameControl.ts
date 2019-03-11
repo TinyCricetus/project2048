@@ -94,27 +94,56 @@ export class GameControl {
 
     public judgeEmpty(): boolean {
         let type: number = this.gameScene.combineGridType;
-        let aroundPos: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(
-            this.gameScene.gridAnimalControl.chaneToShiftPos(this.placePos));
         if (type == 1) {
             return this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY;
+        } else {
+            return this.recordAndJudge(type);
         }
-        if (type == 2) {
-            this.placePos_2 = aroundPos[3];
-            return ((this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY)
-                && (this.scanMaze[aroundPos[3].x][aroundPos[3].y] == EMPTY));
+    }
+
+    public recordAndJudge(type: number): boolean {
+        
+        let aroundPos: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(
+            this.gameScene.gridAnimalControl.chaneToShiftPos(this.placePos));
+            //注意如果位置被旋转过，应该使用旋转后的位置
+        if (this.gameScene.isSpin == 1) {
+            switch(type) {
+                case 2:
+                this.placePos_2 = aroundPos[2];
+                break;
+
+                case 3:
+                this.placePos_2 = aroundPos[0];
+                break;
+
+                case 4:
+                this.placePos_2 = aroundPos[1];
+                break;
+
+                default:
+                break;
+            }
+        } else {
+            switch(type) {
+                case 2:
+                this.placePos_2 = aroundPos[3];
+                break;
+
+                case 3:
+                this.placePos_2 = aroundPos[5];
+                break;
+
+                case 4:
+                this.placePos_2 = aroundPos[4];
+                break;
+
+                default:
+                break;
+            }
         }
-        if (type == 3) {
-            this.placePos_2 = aroundPos[5];
-            return ((this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY)
-                && (this.scanMaze[aroundPos[5].x][aroundPos[5].y] == EMPTY));
-        }
-        if (type == 4) {
-            this.placePos_2 = aroundPos[4];
-            return ((this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY)
-                && (this.scanMaze[aroundPos[4].x][aroundPos[4].y] == EMPTY));
-        }
-        return false;
+        
+        return ((this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY)
+                && (this.scanMaze[this.placePos_2.x][this.placePos_2.y] == EMPTY));
     }
 
 
@@ -230,11 +259,11 @@ export class GameControl {
                 // this.gameScene.addGridToScene(this.gameGrid.children[0], index_2);
                 let indexArray: number[] = [index, index_2];
 
-                //如果旋转过，注意变换顺序
-                if (this.gameScene.isSpin == 1) {
-                    this.gameGrid.children.reverse();
-                    //indexArray.reverse();
-                }
+                // //如果旋转过，注意变换顺序
+                // if (this.gameScene.isSpin == 1) {
+                //     this.gameGrid.children.reverse();
+                //     //indexArray.reverse();
+                // }
 
                 this.gameScene.addCombineGridToScene(this.gameGrid.children, indexArray);
                 cc.log("落子成功！");
