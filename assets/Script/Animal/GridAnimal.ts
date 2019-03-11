@@ -44,7 +44,7 @@ export class GridAnimal {
         this.length = gridArray.length;
 
         for (let i = 0; i < gridArray.length; i++) {
-            gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination),
+            gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination).easing(cc.easeSineIn()),
                 cc.callFunc(this.continueFlag, this)));
         }
 

@@ -272,16 +272,17 @@ export class GameControl {
         }
     }
 
+    //从这里对出块逻辑进行调整
     public craetorGrid() {
         //落子后激活方块生产区域
         let numType: number = Math.floor(Math.random() * 1000) % 2;//随机类型
         let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
         if (num >= 9) {
-            num -= numType + 3;
+            num -= numType + 6;
         }
         if (numType == 0) {
             //生成一型号方块
-            this.gameScene.creatorGrid(10);
+            this.gameScene.creatorGrid(num);
         } else {
             //生成234型号方块
             let type: number = Math.floor(Math.random() * 1000) % 3 + 2;

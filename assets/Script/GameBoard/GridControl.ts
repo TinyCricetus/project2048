@@ -74,11 +74,11 @@ export class GridControl {
     public touchedEnd(event: cc.Event.EventTouch): void {
         if (this.canRotate && this.actionFlag) {
             this.actionFlag = false;
-            this.gameGrid.runAction(cc.sequence(cc.rotateBy(1, 180),
+            this.gameGrid.runAction(cc.sequence(cc.rotateBy(0.5, 180),
                 cc.callFunc(this.judgeAction, this)));
             //小数字跟着旋转
             for (let i of this.gameGrid.children) {
-                i.runAction(cc.rotateBy(1, 180));
+                i.runAction(cc.rotateBy(0.5, 180));
             }
             //注意标记要让落子方块交换坐标
             this.gameScene.isSpin *= -1;
@@ -99,10 +99,10 @@ export class GridControl {
             judge_2 = true;
         } else {
             //对判断坐标进行提前处理，使得旋转不影响坐标判断
-            let pos_0: cc.Vec2 = this.dealPosition(this.gameGrid.children[0].position, this.gameGrid.children[0].getComponent("Grid").gridType);
-            let pos_1: cc.Vec2 = pos.add(pos_0);
-            pos_0 = this.dealPosition(this.gameGrid.children[1].position, this.gameGrid.children[0].getComponent("Grid").gridType);
-            let pos_2: cc.Vec2 = pos.add(pos_0);
+            //let pos_0: cc.Vec2 = this.dealPosition(this.gameGrid.children[0].position, this.gameGrid.children[0].getComponent("Grid").gridType);
+            let pos_1: cc.Vec2 = pos.add(this.gameGrid.children[0].position);
+            //pos_0 = this.dealPosition(this.gameGrid.children[1].position, this.gameGrid.children[0].getComponent("Grid").gridType);
+            let pos_2: cc.Vec2 = pos.add(this.gameGrid.children[1].position);
             judge_1 = this.judgeMoveToChess(pos_1);
             judge_2 = this.judgeMoveToChess(pos_2);
 
@@ -116,15 +116,15 @@ export class GridControl {
         }
     }
 
-    public dealPosition(pos: cc.Vec2, gridType: number): cc.Vec2{
-        if (gridType == 2) {
-            return cc.v2(-pos.x, pos.y);
-        } else if (gridType == 3 || gridType == 4) {
-            return cc.v2(-pos.x, -pos.y);
-        } else {
-            return pos;
-        }
-    }
+    // public dealPosition(pos: cc.Vec2, gridType: number): cc.Vec2{
+    //     if (gridType == 2) {
+    //         return cc.v2(-pos.x, pos.y);
+    //     } else if (gridType == 3 || gridType == 4) {
+    //         return cc.v2(-pos.x, -pos.y);
+    //     } else {
+    //         return pos;
+    //     }
+    // }
 
     //用于动作回调，控制动作执行完毕后才可执行下一个动作
     public judgeAction(): void {
