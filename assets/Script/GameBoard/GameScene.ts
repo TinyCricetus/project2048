@@ -274,8 +274,8 @@ export class GameScene extends cc.Component {
         }
         //记录一下已经存在的更大的数字
         this.theMaxStyle = this.theMaxStyle > style ? this.theMaxStyle : style;
-        this.addGrid(index, style, type, callback);
         this.position.maze[pos.x][pos.y] = FULL;
+        this.addGrid(index, style, type, callback);
     }
 
     //用于单元测试的测试函数，勿动

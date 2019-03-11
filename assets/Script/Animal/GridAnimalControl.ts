@@ -1,6 +1,6 @@
 import { GameScene } from "../GameBoard/GameScene";
 import { GridAnimal } from "./GridAnimal";
-import { EMPTY, FULL } from "../GameBoard/GridData";
+import { EMPTY, FULL, NUMBER2048 } from "../GameBoard/GridData";
 import { ScoreTable } from "../Score/ScoreTable";
 
 export class GridAnimalControl {
@@ -121,6 +121,9 @@ export class GridAnimalControl {
      * @param pos 加入结点在二维数组中的位置
      */
     public addToAnimalArray(node: cc.Node, pos: cc.Vec2, callback: Function) {
+        if (this.gridAnimalArray[pos.x][pos.y] != null) {
+            cc.log("加入结点重复，重复坐标:" + pos);
+        }
         this.gridAnimalArray[pos.x][pos.y] = node;
 
         //每一次加入结点，都应该扫描一次以确认是否产生消除,如果是234型，应该加入两次才扫描一次
@@ -129,11 +132,17 @@ export class GridAnimalControl {
         // //动画启动时禁止拖动
         // this.gameScene.gridControl.canDrag = false;
 
-        if (this.judgeDismiss(node, pos)) {
-            this.dismissGrid(node, pos);
+        //先检测一下这个是不是2048，如果是就直接炸掉!
+        let tempType: number = node.getComponent("Grid").getStyle();
+        if (tempType == NUMBER2048) {
+            this.startToExplosion(node, pos);
         } else {
-            //当检测到不需要继续合并时，234型方块开始检测另外一块
-            callback && callback();
+            if (this.judgeDismiss(node, pos)) {
+                this.dismissGrid(node, pos);
+            } else {
+                //当检测到不需要继续合并时，234型方块开始检测另外一块
+                callback && callback();
+            }
         }
     }
 
@@ -176,6 +185,25 @@ export class GridAnimalControl {
         //清空消除方块的地图标记之后记得在地图加上合成方块
         // let style: number = node.getComponent("Grid").getStyle();
         this.gameScene.addAloneGridToScene(pos, style + 1, type, callback);
+    }
+
+
+    //2048爆炸
+    public startToExplosion(node: cc.Node, pos: cc.Vec2) {
+        this.initCheckStatus();//初始化状态点
+        let aroundArray: cc.Vec2[] = this.getAroundGrid(this.chaneToShiftPos(pos));
+        this.recordArray.push(pos);
+        for (let i of aroundArray) {
+            if (this.checkExplosionPos(i)) {
+                this.recordArray.push(i);
+            }
+        }
+        this.addToDismissArray();
+        this.figureOutScore(this.dismissLimit, this.gridDismissArray.length,
+            node.getComponent("Grid").getStyle());
+        this.updateScore();
+        this.gridAnimal.startToDismiss(node, pos, this.gridDismissArray, this.gameScene.nodePool);
+        this.clearPosition();
     }
 
     /**
@@ -294,6 +322,19 @@ export class GridAnimalControl {
         //确认类型是否相同
         let tempStyle = this.gridAnimalArray[newPos.x][newPos.y].getComponent("Grid").getStyle();
         if (tempStyle != style) {
+            return false;
+        }
+        return true;
+    }
+
+    public checkExplosionPos(pos: cc.Vec2) {
+        //确认坐标是否在范围内
+        let length = (this.centerPoint.x - 1) * 2 + 1;
+        if (pos.x > length || pos.y > length || pos.x < 1 || pos.y < 1) {
+            return false;
+        }
+        //确认坐标点是否存在节点对象
+        if (this.gridAnimalArray[pos.x][pos.y] == null) {
             return false;
         }
         return true;

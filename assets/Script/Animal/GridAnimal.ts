@@ -1,4 +1,4 @@
-import { EMPTY, FULL } from "../GameBoard/GridData";
+import { EMPTY, FULL, NUMBER2048 } from "../GameBoard/GridData";
 import { GridPool } from "../GameBoard/GridPool";
 import { Grid } from "../GameBoard/Grid";
 import { GridAnimalControl } from "./GridAnimalControl";
@@ -44,7 +44,7 @@ export class GridAnimal {
         this.length = gridArray.length;
 
         for (let i = 0; i < gridArray.length; i++) {
-            gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination), 
+            gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination),
                 cc.callFunc(this.continueFlag, this)));
         }
 
@@ -60,14 +60,17 @@ export class GridAnimal {
         if (this.canContinue == this.length) {
             //删除包括自身在内的参与合成的结点
             this.deleteNode();
-            //加入合成结点
-            this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType, () => {
-                if (this.keyNodeType != 1) {
-                    //用于回调结束时联合方块进行额外的操作
-                    this.extra();
-                }
-            });
-           
+            if (this.keyNodeStyle < NUMBER2048) {
+                cc.log("当前为非2048爆炸情况,方块风格为" + this.keyNodeStyle);
+                //加入合成结点
+                this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType, () => {
+                    if (this.keyNodeType != 1) {
+                        //用于回调结束时联合方块进行额外的操作
+                        this.extra();
+                    }
+                });
+            }
+
             // //恢复拖动
             // this.gridAnimalControl.gameScene.gridControl.canDrag = true;
         }

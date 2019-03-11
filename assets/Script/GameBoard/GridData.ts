@@ -16,3 +16,5 @@ export const NORMAL: number = 225;//方块的正常状态
 export const CANNOTPLACE: number = -1;
 export const EMPTY: number = 0;
 export const FULL: number = 1;
+
+export const NUMBER2048: number = 11;//代表2048的风格

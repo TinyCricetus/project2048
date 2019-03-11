@@ -281,7 +281,7 @@ export class GameControl {
         }
         if (numType == 0) {
             //生成一型号方块
-            this.gameScene.creatorGrid(num);
+            this.gameScene.creatorGrid(10);
         } else {
             //生成234型号方块
             let type: number = Math.floor(Math.random() * 1000) % 3 + 2;
