@@ -37,7 +37,8 @@ export class GameScene extends cc.Component {
     public theMaxStyle: number = 1;
     public score: number = 0;
     public isCombineGrid: boolean = null;
-    public combineGridType = 0;
+    public combineGridType: number = 0;
+    public isSpin: number = -1;//联合方块是否旋转过，1代表旋转过，-1代表没有旋转过
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
@@ -188,6 +189,12 @@ export class GameScene extends cc.Component {
         this.addCombineGrid(index, style, type);
     }
 
+    /**
+     * 联合方块落子函数
+     * @param index 
+     * @param style 
+     * @param type 
+     */
     public addCombineGrid(index: number[], style: number[], type: number) {
         // let tempNode: cc.Node = this.shapeCeartor.creatorShape(style, type);
         // this.node.addChild(tempNode);
@@ -201,16 +208,17 @@ export class GameScene extends cc.Component {
         for (let i of tempNode) {
             this.node.addChild(i);
         }
-
-        for (let i = 0; i < tempNode.length; i++) {
-            tempNode[i].position = this.gridArray[index[i]].position;
-        }
-
-        //加入动画组
+        
         let pos: cc.Vec2[] = [];
         for (let i of index) {
             pos.push(this.gameControl.arrayIndexToMaze(i));
         }
+
+        for (let i = 0; i < tempNode.length; i++) {
+            tempNode[i].position = this.gridArray[index[i]].position;
+        }   
+
+        //加入动画组
         this.gridAnimalControl.addCombineToAnimalArray(tempNode, pos);
     }
 

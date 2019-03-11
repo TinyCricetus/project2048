@@ -61,7 +61,7 @@ export class GridAnimal {
             //删除包括自身在内的参与合成的结点
             this.deleteNode();
             //加入合成结点
-            this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType, function() {
+            this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType, () => {
                 if (this.keyNodeType != 1) {
                     //用于回调结束时联合方块进行额外的操作
                     this.extra();

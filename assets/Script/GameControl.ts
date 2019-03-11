@@ -215,11 +215,12 @@ export class GameControl {
                 this.craetorGrid();
             }
         } else {
-            if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY && 
+            if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY &&
                 this.scanMaze[this.placePos_2.x][this.placePos_2.y] == EMPTY) {
                 //这里编辑落子程序
                 let index = this.mazeToArrayIndex(this.placePos);
                 let index_2 = this.mazeToArrayIndex(this.placePos_2);
+
                 //注意这里的顺序，不能随意置换
                 this.canPlace = false;
                 this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
@@ -227,7 +228,15 @@ export class GameControl {
                 // //注意第一个子节点会被删除
                 // this.gameScene.addGridToScene(this.gameGrid.children[0], index);
                 // this.gameScene.addGridToScene(this.gameGrid.children[0], index_2);
-                this.gameScene.addCombineGridToScene(this.gameGrid.children, [index, index_2]);
+                let indexArray: number[] = [index, index_2];
+
+                //如果旋转过，注意变换顺序
+                if (this.gameScene.isSpin == 1) {
+                    this.gameGrid.children.reverse();
+                    //indexArray.reverse();
+                }
+
+                this.gameScene.addCombineGridToScene(this.gameGrid.children, indexArray);
                 cc.log("落子成功！");
                 this.craetorGrid();
             }
@@ -259,21 +268,21 @@ export class GameControl {
     public getAnotherGrid(pos: cc.Vec2, type: number): cc.Vec2 {
         let temp: cc.Vec2 = this.gameScene.gridAnimalControl.chaneToShiftPos(pos);
         let aroundArray: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(temp);
-        switch(type) {
+        switch (type) {
             case 2:
-            return aroundArray[3];
-            break;
+                return aroundArray[3];
+                break;
 
             case 3:
-            return aroundArray[5];
-            break;
+                return aroundArray[5];
+                break;
 
             case 4:
-            return aroundArray[4];
-            break;
+                return aroundArray[4];
+                break;
 
-            default: 
-            break;
+            default:
+                break;
         }
     }
 }

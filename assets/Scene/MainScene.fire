@@ -573,7 +573,7 @@
     "_components": [],
     "_prefab": null,
     "_id": "fe+HdgKyNNCKz7LkHJUxcz",
-    "_opacity": 255,
+    "_opacity": 225,
     "_color": {
       "__type__": "cc.Color",
       "r": 255,
@@ -589,8 +589,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 250,
-      "height": 250
+      "width": 241,
+      "height": 241
     },
     "_rotationX": 0,
     "_rotationY": 0,

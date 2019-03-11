@@ -79,6 +79,10 @@ export class GridControl {
             for (let i of this.gameGrid.children) {
                 i.runAction(cc.rotateBy(1, 180));
             }
+            //注意标记要让落子方块交换坐标
+            this.gameScene.isSpin *= -1;
+            cc.log(`目前是${this.gameScene.isSpin}状态`);
+            
             this.canRotate = false;
         }
         this.canDrag = false;
