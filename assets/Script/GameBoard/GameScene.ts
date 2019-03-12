@@ -116,7 +116,7 @@ export class GameScene extends cc.Component {
             }
             this.node.addChild(this.gridArray[i]);
         }
-        cc.log("看一下背景方块数量:" + this.gridArray.length);
+        //cc.log("看一下背景方块数量:" + this.gridArray.length);
     }
 
     /**
@@ -269,7 +269,7 @@ export class GameScene extends cc.Component {
         this.gridAnimalControl.dismissLimit = 1;
         let index = this.gameControl.mazeToArrayIndex(pos);
         if (style >= 11) {
-            cc.log("2048是可以爆炸的！");
+            cc.log("2048爆炸");
             style = 11;
         }
         //记录一下已经存在的更大的数字

@@ -123,8 +123,8 @@ export class GridAnimalControl {
     public addToAnimalArray(node: cc.Node, pos: cc.Vec2, callback: Function) {
         if (this.gridAnimalArray[pos.x][pos.y] != null) {
             cc.log("加入结点重复，重复坐标:" + pos);
+            this.gridAnimalArray[pos.x][pos.y] = node;
         }
-        this.gridAnimalArray[pos.x][pos.y] = node;
 
         //每一次加入结点，都应该扫描一次以确认是否产生消除,如果是234型，应该加入两次才扫描一次
         let gridType: number = node.getComponent("Grid").gridType;
