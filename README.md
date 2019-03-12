@@ -1,2 +1,1 @@
-# hello-world
-Hello world new project template.
+2048六角消除哦！当然只是核心玩法= =
