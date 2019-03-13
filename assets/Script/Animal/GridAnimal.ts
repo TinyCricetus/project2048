@@ -64,10 +64,11 @@ export class GridAnimal {
                 cc.log("当前为非2048爆炸情况,方块风格为" + this.keyNodeStyle);
                 //加入合成结点
                 this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType, () => {
-                    if (this.keyNodeType != 1) {
-                        //用于回调结束时联合方块进行额外的操作
-                        this.extra();
-                    }
+                    // if (this.keyNodeType != 1) {
+                    //     //用于回调结束时联合方块进行额外的操作
+                    //     this.extra();
+                    // }
+                    this.extra();
                 });
             }
 

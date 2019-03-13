@@ -26,6 +26,8 @@ export class GridAnimalControl {
     public combinePos: cc.Vec2[] = null;
     public remian: number = 0;//记录一下联合方块是剩余小的还是大的
 
+    public aroundGrid: cc.Vec2[] = null;
+
     //构造函数
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -48,6 +50,7 @@ export class GridAnimalControl {
         this.gridAnimal = new GridAnimal(this);
         this.gridAnimal.init(this.scanMaze);
         this.dismissLimit = 2;
+        this.aroundGrid = [];
     }
 
     //相关数组初始化
@@ -69,11 +72,15 @@ export class GridAnimalControl {
     public addCombineToAnimalArray(node: cc.Node[], pos: cc.Vec2[]) {
         // //动画启动时禁止拖动
         // this.gameScene.gridControl.canDrag = false;
-        
+
         this.combineGrid = node;
         this.combinePos = pos;
         for (let i = 0; i < pos.length; i++) {
-            this.gridAnimalArray[pos[i].x][pos[i].y] = node[i];
+            if (this.gridAnimalArray[pos[i].x][pos[i].y] == null) {
+                this.gridAnimalArray[pos[i].x][pos[i].y] = node[i];
+            } else {
+                cc.log("加入方块重复!");
+            }
         }
         //先合成小的
         let style: number[] = [];
@@ -83,34 +90,59 @@ export class GridAnimalControl {
         if (style[0] <= style[1]) {
             let result: boolean = this.judgeDismiss(node[0], pos[0]);
             if (result) {
+                this.searchAndRecordAroundPos(pos[0]);
                 this.dismissGrid(node[0], pos[0]);
             }
             //对结点0进行合成判断和处理,剩余结点1
             this.remian = 1;
             //获取剩余结点之后判断上个结点是否发生了消除操作，如果没有，对剩余结点进行消除检测
             if (!result) {
+                //如果第一块没有产生消除，应该记录第二块的
+                this.aroundGrid.push(pos[1]);
                 this.nextStep();
             }
         } else {
             let result: boolean = this.judgeDismiss(node[1], pos[1]);
             if (result) {
+                this.searchAndRecordAroundPos(pos[1]);
                 this.dismissGrid(node[1], pos[1]);
             }
             this.remian = 0;
             if (!result) {
+                this.aroundGrid.push(pos[0]);
                 this.nextStep();
             }
         }
-        
+
+    }
+
+    //记录玩家下棋点周围的棋子
+    //从此函数增加对连续消除的限制
+    public searchAndRecordAroundPos(pos: cc.Vec2) {
+        //如果不是玩家下的，返回不记录
+        // if (this.dismissLimit == 1) {
+        //     return;
+        // }
+        this.aroundGrid = this.getAroundGrid(this.chaneToShiftPos(pos));
     }
 
     //第一轮动作结束之后回调函数调用的下一步
     public nextStep() {
-        let pos: cc.Vec2 = this.combinePos[this.remian];
-        let node: cc.Node = this.combineGrid[this.remian];
-        if (this.gridAnimalArray[pos.x][pos.y] != null) {
-            if (this.judgeDismiss(node, pos)) {
-                this.dismissGrid(node, pos);
+        // let pos: cc.Vec2 = this.combinePos[this.remian];
+        // let node: cc.Node = this.combineGrid[this.remian];
+        // if (this.gridAnimalArray[pos.x][pos.y] != null) {
+        //     if (this.judgeDismiss(node, pos)) {
+        //         this.dismissGrid(node, pos);
+        //     }
+        // }
+        if (this.aroundGrid.length > 0) {
+            while (this.aroundGrid.length > 0) {
+                let pos: cc.Vec2 = this.aroundGrid.shift();
+                let node: cc.Node = this.gridAnimalArray[pos.x][pos.y];
+                if (node != null && this.judgeDismiss(node, pos)) {
+                    this.dismissGrid(node, pos);
+                    break;
+                }
             }
         }
     }
@@ -121,14 +153,15 @@ export class GridAnimalControl {
      * @param pos 加入结点在二维数组中的位置
      */
     public addToAnimalArray(node: cc.Node, pos: cc.Vec2, callback: Function) {
-        if (this.gridAnimalArray[pos.x][pos.y] != null) {
+        if (this.gridAnimalArray[pos.x][pos.y] == null) {
+            this.gridAnimalArray[pos.x][pos.y] = node;
+        } else {
             cc.log("加入结点重复，重复坐标:" + pos);
         }
-        this.gridAnimalArray[pos.x][pos.y] = node;
 
         //每一次加入结点，都应该扫描一次以确认是否产生消除,如果是234型，应该加入两次才扫描一次
         let gridType: number = node.getComponent("Grid").gridType;
-        
+
         // //动画启动时禁止拖动
         // this.gameScene.gridControl.canDrag = false;
 
@@ -138,9 +171,18 @@ export class GridAnimalControl {
             this.startToExplosion(node, pos);
         } else {
             if (this.judgeDismiss(node, pos)) {
+                //如果这个单独型方块是玩家下的，记录周围棋子
+                if (this.dismissLimit == 2) {
+                    this.searchAndRecordAroundPos(pos);
+                }
                 this.dismissGrid(node, pos);
             } else {
-                //当检测到不需要继续合并时，234型方块开始检测另外一块
+                //当检测到不需要继续合并时，开始剩余操作
+                
+                //如果此方块是之前合成过来的，应该检测其周围方块
+                if (this.dismissLimit == 1) {
+                    this.searchAndRecordAroundPos(pos);
+                }
                 callback && callback();
             }
         }
@@ -229,6 +271,8 @@ export class GridAnimalControl {
             this.scanMaze[pos.x][pos.y] = EMPTY;
             this.gridAnimalArray[pos.x][pos.y] = null;
         }
+        //将棋盘定位阴影清空
+        this.gameScene.gameControl.changeCombineGridState(-1);
     }
 
     //初始化标记数组

@@ -106,7 +106,7 @@ export class GridControl {
             judge_1 = this.judgeMoveToChess(pos_1);
             judge_2 = this.judgeMoveToChess(pos_2);
 
-            cc.log(pos_1 + " " + pos_2);
+            //cc.log(pos_1 + " " + pos_2);
         }
         if (this.gameScene.combineGridType < 1 || this.gameScene.combineGridType > 4) {
             cc.log("类型错误!");
