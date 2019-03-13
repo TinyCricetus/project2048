@@ -26,6 +26,8 @@ export class GameScene extends cc.Component {
     gameGrid: cc.Node = null;//管理方块的结点
     @property(cc.Label)
     scoreDisplay: cc.Label = null;//用于控制分数显示
+    @property(cc.Node)
+    gameOver: cc.Node = null;
 
     public gridControl: GridControl = null;
     public shapeCeartor: ShapeCreator = null;//形状生成器
@@ -288,5 +290,10 @@ export class GameScene extends cc.Component {
     //用于单元测试的测试函数，勿动
     public unitTest(): cc.Vec2 {
         return this.gameControl.arrayIndexToMaze(12);
+    }
+
+    public gameOverFunc() {
+        this.gameOver.active = true;
+        this.gameOver.children[0].getComponent(cc.Label).string = `${this.score}`;
     }
 }

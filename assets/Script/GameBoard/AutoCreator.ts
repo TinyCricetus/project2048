@@ -71,6 +71,7 @@ export class AutoCreator {
 
         if (this.emptyPos.length == 0) {
             cc.log("游戏结束！");
+            this.gameScene.gameOverFunc();
             return ;
         }
 
