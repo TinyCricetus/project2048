@@ -27,6 +27,7 @@ export class GridAnimalControl {
     public remian: number = 0;//记录一下联合方块是剩余小的还是大的
 
     public aroundGrid: cc.Vec2[] = null;
+    // public gridCount: number = 0;//方块动画数量计数器
 
     //构造函数
     constructor(gameScene: GameScene) {
@@ -135,14 +136,50 @@ export class GridAnimalControl {
         //         this.dismissGrid(node, pos);
         //     }
         // }
+
+
         if (this.aroundGrid.length > 0) {
             while (this.aroundGrid.length > 0) {
                 let pos: cc.Vec2 = this.aroundGrid.shift();
                 let node: cc.Node = this.gridAnimalArray[pos.x][pos.y];
                 if (node != null && this.judgeDismiss(node, pos)) {
+                    //this.determineAhead(node, pos);
                     this.dismissGrid(node, pos);
                     break;
                 }
+                if (this.aroundGrid.length == 0) {
+                    this.startToCreat();
+                }
+            }
+        } else {
+            this.startToCreat();
+        }
+
+        // cc.log("剩余方块消除动画数量:" + this.gridCount);
+        // if (this.gridCount == 0) {
+        //     cc.log("消除动画执行完毕！");
+        //     //如果有动画,消除动画执行完毕之后生产区再生产方块
+            
+        // }
+    }
+
+    public startToCreat() {
+        if (this.gameScene.gameGrid.childrenCount == 0) {
+            this.gameScene.gameControl.craetorGrid();
+        }
+    }
+
+    //对下一个方块进行提前预判是否消除
+    public determineAhead(node: cc.Node, pos: cc.Vec2) {
+        let temp: cc.Node = this.gameScene.nodePool.getNode();
+        temp.getComponent("Grid").setStyle(node.getComponent("Grid").getStyle() + 1);
+        let style: number = temp.getComponent("Grid").getStyle();
+        if (style >= NUMBER2048) {
+            //在这里编写其他的操作
+        } else {
+            let res: boolean = this.judgeDismiss(temp, pos);
+            if (res) {
+                //在这里编写其他的操作
             }
         }
     }
@@ -175,15 +212,16 @@ export class GridAnimalControl {
                 if (this.dismissLimit == 2) {
                     this.searchAndRecordAroundPos(pos);
                 }
+               
                 this.dismissGrid(node, pos);
             } else {
                 //当检测到不需要继续合并时，开始剩余操作
-                
+
                 //如果此方块是之前合成过来的，应该检测其周围方块
                 if (this.dismissLimit == 1) {
                     this.searchAndRecordAroundPos(pos);
                 }
-                callback && callback();
+                this.nextStep();
             }
         }
     }
@@ -195,13 +233,18 @@ export class GridAnimalControl {
      */
     public judgeDismiss(node: cc.Node, pos: cc.Vec2): boolean {
         let dimissCount = this.scanAnimalArray(pos);
-        return dimissCount > this.dismissLimit;
+        if (dimissCount > this.dismissLimit) {
+            // this.gridCount += 1;
+            // cc.log("增加消除动画：" + this.gridCount);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public dismissGrid(node: cc.Node, pos: cc.Vec2) {
         //扫描一遍棋盘,判断消除条件
-
-        cc.log("是时候一波消除了!");
+        //cc.log("是时候一波消除了!");
 
         //确认消除，开始消除有关操作
         this.addToDismissArray();
@@ -272,7 +315,7 @@ export class GridAnimalControl {
             this.gridAnimalArray[pos.x][pos.y] = null;
         }
         //将棋盘定位阴影清空
-        this.gameScene.gameControl.changeCombineGridState(-1);
+        this.gameScene.gameControl.changeGridState(-1);
     }
 
     //初始化标记数组

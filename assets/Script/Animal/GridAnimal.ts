@@ -61,7 +61,7 @@ export class GridAnimal {
             //删除包括自身在内的参与合成的结点
             this.deleteNode();
             if (this.keyNodeStyle < NUMBER2048) {
-                cc.log("当前为非2048爆炸情况,方块风格为" + this.keyNodeStyle);
+                //cc.log("当前为非2048爆炸情况,方块风格为" + this.keyNodeStyle);
                 //加入合成结点
                 this.gridAnimalControl.addLevelUpGridToScene(this.keyNodeStyle, this.nodeMazePos, this.keyNodeType, () => {
                     // if (this.keyNodeType != 1) {

@@ -42,6 +42,9 @@ export class GridControl {
 
 
     public touchedBegin(event: cc.Event.EventTouch): void {
+        if (this.initPosNode.childrenCount <= 0) {
+            return ;
+        }
         this.pos = event.getLocation();
         this.pos = this.initPosNode.convertToNodeSpace(this.pos);
         if ((this.pos.x > 0 && this.pos.x < this.initPosNode.width) &&
@@ -51,6 +54,9 @@ export class GridControl {
     }
 
     public touchedMove(event: cc.Event.EventTouch): void {
+        if (this.initPosNode.childrenCount <= 0) {
+            return ;
+        }
         this.pos = event.getLocation();
         this.pos = this.initPosNode.convertToNodeSpace(this.pos);
         //执行位置判断
@@ -72,6 +78,9 @@ export class GridControl {
     }
 
     public touchedEnd(event: cc.Event.EventTouch): void {
+        if (this.initPosNode.childrenCount <= 0) {
+            return ;
+        }
         if (this.canRotate && this.actionFlag) {
             this.actionFlag = false;
             this.gameGrid.runAction(cc.sequence(cc.rotateBy(0.5, 180),
@@ -82,7 +91,7 @@ export class GridControl {
             }
             //注意标记要让落子方块交换坐标
             this.gameScene.isSpin *= -1;
-            cc.log(`目前是${this.gameScene.isSpin}状态`);
+            //cc.log(`目前是${this.gameScene.isSpin}状态`);
             
             this.canRotate = false;
         }

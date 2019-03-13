@@ -6,6 +6,7 @@ import { GameControl } from "../GameControl";
 import { GridControl } from "./GridControl";
 import { GridAnimalControl } from "../Animal/GridAnimalControl";
 import { FULL } from "./GridData";
+import { AutoCreator } from "./autoCreator";
 
 const { ccclass, property } = cc._decorator;
 
@@ -39,6 +40,7 @@ export class GameScene extends cc.Component {
     public isCombineGrid: boolean = null;
     public combineGridType: number = 0;
     public isSpin: number = -1;//联合方块是否旋转过，1代表旋转过，-1代表没有旋转过
+    public auto: AutoCreator = null;
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
@@ -60,6 +62,8 @@ export class GameScene extends cc.Component {
 
         //创造一个方块
         this.creatorGrid(1);
+        //开始启用逻辑方块生成控制
+        this.auto = new AutoCreator(this);
         
         // //创造一个联合方块
         // let style: number[] = [1, 2];
@@ -116,7 +120,7 @@ export class GameScene extends cc.Component {
             }
             this.node.addChild(this.gridArray[i]);
         }
-        cc.log("看一下背景方块数量:" + this.gridArray.length);
+        //cc.log("看一下背景方块数量:" + this.gridArray.length);
     }
 
     /**
@@ -269,7 +273,7 @@ export class GameScene extends cc.Component {
         this.gridAnimalControl.dismissLimit = 1;
         let index = this.gameControl.mazeToArrayIndex(pos);
         if (style >= 11) {
-            cc.log("2048是可以爆炸的！");
+            cc.log("2048启动爆炸！");
             style = 11;
         }
         //记录一下已经存在的更大的数字

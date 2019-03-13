@@ -173,6 +173,9 @@ export class GameControl {
      * @param pos 
      */
     public isContain(pos: cc.Vec2): boolean {
+        if (this.gameGrid.childrenCount <= 0) {
+            return ;
+        }
         //正在操控方块的坐标信息,注意使用时应该注意转换
         let tempPos = this.gameGrid.convertToWorldSpaceAR(this.gameGrid.children[0].position);
         tempPos = this.gameScene.node.convertToNodeSpaceAR(tempPos);
@@ -239,9 +242,9 @@ export class GameControl {
                 this.canPlace = false;
                 this.scanMaze[this.placePos.x][this.placePos.y] = FULL;
                 this.gameScene.addGridToScene(this.gameGrid.children[0], index);
-                cc.log("落子成功！");
+                //cc.log("落子成功！");
                 //生成新方块
-                this.craetorGrid();
+                //this.craetorGrid();
             }
         } else {
             if (this.canPlace && this.scanMaze[this.placePos.x][this.placePos.y] == EMPTY &&
@@ -266,8 +269,8 @@ export class GameControl {
                 // }
 
                 this.gameScene.addCombineGridToScene(this.gameGrid.children, indexArray);
-                cc.log("落子成功！");
-                this.craetorGrid();
+                //cc.log("落子成功！");
+                //this.craetorGrid();
             }
         }
     }
