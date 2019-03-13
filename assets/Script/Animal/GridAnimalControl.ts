@@ -89,32 +89,24 @@ export class GridAnimalControl {
             style.push(i.getComponent("Grid").getStyle());
         }
         if (style[0] <= style[1]) {
-            let result: boolean = this.judgeDismiss(node[0], pos[0]);
+            this.dealGrid(node[0], pos[0], pos[1]);
+        } else {
+            this.dealGrid(node[1], pos[1], pos[0]);
+        }
+    }
+
+    public dealGrid(node: cc.Node, pos: cc.Vec2, anotherPos: cc.Vec2) {
+        let result: boolean = this.judgeDismiss(node, pos);
             if (result) {
-                this.searchAndRecordAroundPos(pos[0]);
-                this.dismissGrid(node[0], pos[0]);
+                this.searchAndRecordAroundPos(pos);
+                this.dismissGrid(node, pos);
             }
-            //对结点0进行合成判断和处理,剩余结点1
-            this.remian = 1;
             //获取剩余结点之后判断上个结点是否发生了消除操作，如果没有，对剩余结点进行消除检测
             if (!result) {
                 //如果第一块没有产生消除，应该记录第二块的
-                this.aroundGrid.push(pos[1]);
+                this.aroundGrid.push(anotherPos);
                 this.nextStep();
             }
-        } else {
-            let result: boolean = this.judgeDismiss(node[1], pos[1]);
-            if (result) {
-                this.searchAndRecordAroundPos(pos[1]);
-                this.dismissGrid(node[1], pos[1]);
-            }
-            this.remian = 0;
-            if (!result) {
-                this.aroundGrid.push(pos[0]);
-                this.nextStep();
-            }
-        }
-
     }
 
     //记录玩家下棋点周围的棋子
@@ -124,7 +116,10 @@ export class GridAnimalControl {
         // if (this.dismissLimit == 1) {
         //     return;
         // }
-        this.aroundGrid = this.getAroundGrid(this.chaneToShiftPos(pos));
+        let tempArray: cc.Vec2[] = this.getAroundGrid(this.chaneToShiftPos(pos));
+        for (let i of tempArray) {
+            this.aroundGrid.push(i);
+        }
     }
 
     //第一轮动作结束之后回调函数调用的下一步
@@ -136,8 +131,6 @@ export class GridAnimalControl {
         //         this.dismissGrid(node, pos);
         //     }
         // }
-
-
         if (this.aroundGrid.length > 0) {
             while (this.aroundGrid.length > 0) {
                 let pos: cc.Vec2 = this.aroundGrid.shift();
@@ -289,6 +282,7 @@ export class GridAnimalControl {
         this.updateScore();
         this.gridAnimal.startToDismiss(node, pos, this.gridDismissArray, this.gameScene.nodePool);
         this.clearPosition();
+        this.gameScene.gameControl.craetorGrid();
     }
 
     /**

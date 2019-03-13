@@ -24,6 +24,7 @@ export class GameControl {
     //落子数组位置记录
     public placePos: cc.Vec2 = null;
     public placePos_2: cc.Vec2 = null;
+    public testIndex: number = 0;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -277,20 +278,60 @@ export class GameControl {
 
     //从这里对出块逻辑进行调整
     public craetorGrid() {
-        //落子后激活方块生产区域
-        let numType: number = Math.floor(Math.random() * 1000) % 2;//随机类型
-        let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
-        if (num >= 9) {
-            num -= numType + 6;
+        // //落子后激活方块生产区域
+        // let numType: number = Math.floor(Math.random() * 1000) % 2;//随机类型
+        // let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
+        // if (num >= 9) {
+        //     num -= numType + 6;
+        // }
+        // let type = this.testGridType();
+        // let v: cc.Vec2 = this.testGridNum();
+        // let num: number[] = [v.x, v.y];
+
+        //这里插入自动产生逻辑
+        this.gameScene.auto.figureEmpty();
+        
+        let length: number = this.gameScene.auto.typeNum.length;
+        if (length == 0) {
+            cc.log("无解决方案!");
+            return ;
         }
-        if (numType == 0) {
+        let i: number = Math.floor(Math.random() * 1000) % length;
+        let num: cc.Vec2 = this.gameScene.auto.gridNum[i];
+        let type: number = this.gameScene.auto.typeNum[i];
+
+        if (type == 1) {
             //生成一型号方块
-            this.gameScene.creatorGrid(num);
+            this.gameScene.creatorGrid(num.x);
         } else {
-            //生成234型号方块
-            let type: number = Math.floor(Math.random() * 1000) % 3 + 2;
-            this.gameScene.creatorCombineGrid([num, (num + 1) % 11 + 1], type);
+            this.gameScene.creatorCombineGrid([num.x, num.y], type);
         }
+    }
+
+
+    //数据测试函数
+    public testGridType(): number {
+        let typeArray: number[] = [1, 1, 1, 1, 1, 1, 2, 3 ,4];
+
+        this.testIndex++;
+
+        return typeArray[this.testIndex];
+    }
+
+    public testGridNum(): cc.Vec2 {
+        let gridNum: cc.Vec2[] = [
+            cc.v2(1, 0),
+            cc.v2(1, 0),
+            cc.v2(3, 0),
+            cc.v2(3, 0),
+            cc.v2(5, 0),
+            cc.v2(5, 0),
+
+            cc.v2(1, 3),
+            cc.v2(2, 2),
+            cc.v2(2, 2),
+        ];
+        return gridNum[this.testIndex];
     }
 
     /**

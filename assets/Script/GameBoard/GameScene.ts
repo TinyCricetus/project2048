@@ -62,8 +62,7 @@ export class GameScene extends cc.Component {
 
         //创造一个方块
         this.creatorGrid(1);
-        //开始启用逻辑方块生成控制
-        this.auto = new AutoCreator(this);
+        
         
         // //创造一个联合方块
         // let style: number[] = [1, 2];
@@ -78,6 +77,10 @@ export class GameScene extends cc.Component {
         this.gridAnimalControl = new GridAnimalControl(this);
         //获取特效数组引用
         this.gridAnimalArray = this.gridAnimalControl.gridAnimalArray;
+
+        //开始启用逻辑方块生成控制
+        this.auto = new AutoCreator(this);
+        
         //分数归零！
         this.score = 0;
         this.scoreDisplay.string = `${this.score}`;
