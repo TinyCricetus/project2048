@@ -300,7 +300,7 @@ export class GameScene extends cc.Component {
             cc.log("2048启动爆炸！");
             style = 11;
             //使用次数加2
-            this.helpWheel += 10;
+            this.helpWheel += 5;
         }
         //记录一下已经存在的更大的数字
         this.theMaxStyle = this.theMaxStyle > style ? this.theMaxStyle : style;
