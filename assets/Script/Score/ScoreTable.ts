@@ -31,6 +31,7 @@ export class ScoreTable {
     };
 
     public static multiple: {[key: number]: number} = {
+        1   : 1,
         2   : 0.5,
         3   : 1,
         4   : 2,

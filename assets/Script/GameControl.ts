@@ -284,9 +284,10 @@ export class GameControl {
         // if (num >= 9) {
         //     num -= numType + 6;
         // }
+
         // let type = this.testGridType();
         // let v: cc.Vec2 = this.testGridNum();
-        // let num: number[] = [v.x, v.y];
+        // let num: cc.Vec2 = cc.v2(v.x, v.y);
 
         //这里插入自动产生逻辑
         this.gameScene.auto.figureEmpty();
@@ -320,9 +321,9 @@ export class GameControl {
 
     public testGridNum(): cc.Vec2 {
         let gridNum: cc.Vec2[] = [
-            cc.v2(1, 0),
-            cc.v2(1, 0),
-            cc.v2(3, 0),
+            cc.v2(11, 0),
+            cc.v2(11, 0),
+            cc.v2(11, 0),
             cc.v2(3, 0),
             cc.v2(5, 0),
             cc.v2(5, 0),

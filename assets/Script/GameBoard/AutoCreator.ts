@@ -156,8 +156,11 @@ export class AutoCreator {
         if (style2 == 0) {
             style2++;
         }
-        if (style2 >= 11) {
-            style2 -= 3;
+        if (style2 == 11) {
+            style2 -= 2;
+        }
+        if  (style2 == 10) {
+            style2 -= 1;
         }
         this.addCase(cc.v2(style, style2), type);
     }

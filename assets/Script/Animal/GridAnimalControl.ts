@@ -255,6 +255,7 @@ export class GridAnimalControl {
         //放置方块之后更新分数
         this.gameScene.score += this.addScore;
         this.gameScene.scoreDisplay.string = `${this.gameScene.score}`;
+        cc.sys.localStorage.setItem("score", this.gameScene.score);
         cc.log(this.gameScene.scoreDisplay.string);
     }
 

@@ -46,6 +46,19 @@ export class GameScene extends cc.Component {
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
+
+        //加载本地分数储存
+        let localScore: any = cc.sys.localStorage.getItem("score");
+        if (localScore == null) {
+            cc.sys.localStorage.setItem("score", 0);
+        } else {
+            if (typeof localScore == "string") {
+                this.score = Number(localScore);
+            } else {
+                this.score = localScore;
+            }
+        }
+
         //初始化方块节点池
         this.nodePool = new GridPool();
         this.nodePool.initNodePool(this.gridPrefab);//初始化结点池
@@ -84,7 +97,7 @@ export class GameScene extends cc.Component {
         this.auto = new AutoCreator(this);
         
         //分数归零！
-        this.score = 0;
+        //this.score = 0;
         this.scoreDisplay.string = `${this.score}`;
     }
 
@@ -294,6 +307,7 @@ export class GameScene extends cc.Component {
 
     public gameOverFunc() {
         this.gameOver.active = true;
+        cc.sys.localStorage.setItem("score", this.score);
         this.gameOver.children[0].getComponent(cc.Label).string = `${this.score}`;
     }
 }
