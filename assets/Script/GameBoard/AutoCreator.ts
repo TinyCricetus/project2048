@@ -21,6 +21,7 @@ export class AutoCreator {
     public index: number = 0;
     public caseCount: number = 0;
     public emptyPos: cc.Vec2[] = null;
+    public autoMode: boolean = false;//智能匹配模式
 
     public constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
@@ -71,7 +72,6 @@ export class AutoCreator {
 
         if (this.emptyPos.length == 0) {
             cc.log("游戏结束！");
-            this.gameScene.gameOverFunc();
             return ;
         }
 
@@ -116,7 +116,17 @@ export class AutoCreator {
         }
 
         if (emptyIndex.length == 0) {
-            //没有空位，表示只有中心点一个空位，那就返回旁边相同的风格
+           
+            if (!this.autoMode) {
+                let type: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
+                if (type >= 10) {
+                    type -= 1;
+                }
+                this.addCase(cc.v2(type, 0), 1);
+                return ;
+            }
+
+             //没有空位，表示只有中心点一个空位，那就返回旁边相同的风格
             if (fullNode.length > 0) {
                 let type: number = fullNode[0].getComponent("Grid").getStyle();
                 this.addCase(cc.v2(type, 0), 1);
@@ -134,7 +144,24 @@ export class AutoCreator {
             return;
         }
 
-        let style: number = fullNode[0].getComponent("Grid").getStyle();
+        //判断智能出块是否启动
+        let style: number = 0;
+        if (this.autoMode) {
+            style = fullNode[0].getComponent("Grid").getStyle();
+            if (style >= 10) {
+                style -= 1;
+            }
+        } else {
+            style = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
+            if (style >= 10) {
+                style -= 2;
+            }
+            if (style <= 0) {
+                style = style + Math.floor(Math.random() * 1000) % 3 + 1;
+            }
+        }
+        
+        
         if (emptyIndex.indexOf(1) != -1 || emptyIndex.indexOf(4) != -1) {
             //如果一号位和四号位是空的，那就采用3型方块
             this.emptyCase(style, 4);
@@ -152,16 +179,25 @@ export class AutoCreator {
     }
 
     public emptyCase(style: number, type: number) {
-        let style2: number = style + this.getPositiveOrNagtive();
-        if (style2 == 0) {
-            style2++;
+        let style2: number = 0;
+        if (this.autoMode) {
+            style2 = style + this.getPositiveOrNagtive();
+            if (style2 == 0) {
+                style2++;
+            }
+            if (style2 >= 10) {
+                style2 -= 1;
+            }
+        } else {
+            style2 = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
+            if (style2 >= 10) {
+                style2 -= 2;
+            }
+            if (style2 <= 0) {
+                style2 = style2 + Math.floor(Math.random() * 1000) % 3 + 1;
+            }
         }
-        if (style2 == 11) {
-            style2 -= 2;
-        }
-        if  (style2 == 10) {
-            style2 -= 1;
-        }
+        
         this.addCase(cc.v2(style, style2), type);
     }
 

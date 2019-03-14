@@ -1,7 +1,7 @@
 import { Position } from "./GameBoard/Position";
 import { GameScene } from "./GameBoard/GameScene";
 import { GridControl } from "./GameBoard/GridControl";
-import { WIDTH, HEIGHT, NORMAL, SHALLOW, EMPTY, CANNOTPLACE, FULL } from "./GameBoard/GridData";
+import { WIDTH, HEIGHT, NORMAL, SHALLOW, EMPTY, CANNOTPLACE, FULL, NUMBER2048 } from "./GameBoard/GridData";
 
 /**
  * 游戏全局逻辑控制
@@ -278,35 +278,19 @@ export class GameControl {
 
     //从这里对出块逻辑进行调整
     public craetorGrid() {
-        // //落子后激活方块生产区域
-        // let numType: number = Math.floor(Math.random() * 1000) % 2;//随机类型
-        // let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
-        // if (num >= 9) {
-        //     num -= numType + 6;
-        // }
 
-        // let type = this.testGridType();
-        // let v: cc.Vec2 = this.testGridNum();
-        // let num: cc.Vec2 = cc.v2(v.x, v.y);
 
-        //这里插入自动产生逻辑
-        this.gameScene.auto.figureEmpty();
-        
-        let length: number = this.gameScene.auto.typeNum.length;
-        if (length == 0) {
-            cc.log("无解决方案!");
-            return ;
-        }
-        let i: number = Math.floor(Math.random() * 1000) % length;
-        let num: cc.Vec2 = this.gameScene.auto.gridNum[i];
-        let type: number = this.gameScene.auto.typeNum[i];
+            this.autoCreator();
 
-        if (type == 1) {
-            //生成一型号方块
-            this.gameScene.creatorGrid(num.x);
-        } else {
-            this.gameScene.creatorCombineGrid([num.x, num.y], type);
-        }
+            if (this.gameScene.auto.autoMode) {
+                this.gameScene.helpWheel--;
+                if (this.gameScene.helpWheel <= 0) {
+                    this.gameScene.helpWheel = 0;
+                    this.gameScene.auto.autoMode = false;
+                }
+            }
+
+            this.gameScene.displayWheel();
     }
 
 
@@ -333,6 +317,52 @@ export class GameControl {
             cc.v2(2, 2),
         ];
         return gridNum[this.testIndex];
+    }
+
+    public autoCreator() {
+        // //测试时启用
+        // let type = this.testGridType();
+        // let v: cc.Vec2 = this.testGridNum();
+        // let num: cc.Vec2 = cc.v2(v.x, v.y);
+
+        //这里插入自动产生逻辑
+        this.gameScene.auto.figureEmpty();
+        
+        let length: number = this.gameScene.auto.typeNum.length;
+        if (length == 0) {
+            cc.log("无解决方案!");
+            this.gameScene.gameOverFunc();
+            return ;
+        }
+        let i: number = Math.floor(Math.random() * 1000) % length;
+        let num: cc.Vec2 = this.gameScene.auto.gridNum[i];
+        let type: number = this.gameScene.auto.typeNum[i];
+
+        if (type == 1) {
+            //生成一型号方块
+            this.gameScene.creatorGrid(num.x);
+        } else {
+            this.gameScene.creatorCombineGrid([num.x, num.y], type);
+        }
+    }
+
+    public randomCreator() {
+        let type: number = Math.floor(Math.random() * 1000) % 4 + 1;
+        let num1: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
+        if (num1 >= NUMBER2048) {
+            num1 -= 2;
+        }
+        let num2: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
+        if (num2 >= NUMBER2048) {
+            num2 -= 2;
+        }
+
+        if (type == 1) {
+            //生成一型号方块
+            this.gameScene.creatorGrid(num1);
+        } else {
+            this.gameScene.creatorCombineGrid([num1, num2], type);
+        }
     }
 
     /**

@@ -28,6 +28,10 @@ export class GameScene extends cc.Component {
     scoreDisplay: cc.Label = null;//用于控制分数显示
     @property(cc.Node)
     gameOver: cc.Node = null;
+    @property(cc.Button)
+    wheel: cc.Button = null;
+    @property(cc.Node)
+    bg: cc.Node = null;
 
     public gridControl: GridControl = null;
     public shapeCeartor: ShapeCreator = null;//形状生成器
@@ -43,20 +47,19 @@ export class GameScene extends cc.Component {
     public combineGridType: number = 0;
     public isSpin: number = -1;//联合方块是否旋转过，1代表旋转过，-1代表没有旋转过
     public auto: AutoCreator = null;
+    public helpWheel: number = 0;
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
 
         //加载本地分数储存
-        let localScore: any = cc.sys.localStorage.getItem("score");
-        if (localScore == null) {
+        let localScore: number = Number(cc.sys.localStorage.getItem("score"));
+        if (localScore == 0) {
             cc.sys.localStorage.setItem("score", 0);
         } else {
-            if (typeof localScore == "string") {
-                this.score = Number(localScore);
-            } else {
-                this.score = localScore;
-            }
+            
+            this.score = localScore;
+            this.score = Math.floor(this.score / 2);
         }
 
         //初始化方块节点池
@@ -99,6 +102,9 @@ export class GameScene extends cc.Component {
         //分数归零！
         //this.score = 0;
         this.scoreDisplay.string = `${this.score}`;
+        this.helpWheel = 30;//辅助轮协议初始化
+
+        this.displayWheel();
     }
 
     // /**
@@ -293,6 +299,8 @@ export class GameScene extends cc.Component {
         if (style >= 11) {
             cc.log("2048启动爆炸！");
             style = 11;
+            //使用次数加2
+            this.helpWheel += 10;
         }
         //记录一下已经存在的更大的数字
         this.theMaxStyle = this.theMaxStyle > style ? this.theMaxStyle : style;
@@ -307,7 +315,47 @@ export class GameScene extends cc.Component {
 
     public gameOverFunc() {
         this.gameOver.active = true;
-        cc.sys.localStorage.setItem("score", this.score);
+        cc.sys.localStorage.setItem("score", 0);
         this.gameOver.children[0].getComponent(cc.Label).string = `${this.score}`;
+    }
+
+
+    public startHelp() {
+        if (this.auto.autoMode) {
+            this.auto.autoMode = false;
+            this.wheel.node.children[0].getComponent(cc.Label).string = "辅助轮协议关闭中";
+            this.changeTheBg(false);
+            cc.log(this.wheel.node.children[0].getComponent(cc.Label).string);
+            return ;
+        }
+
+        if (this.helpWheel > 0) {
+            this.auto.autoMode = true;
+            this.wheel.node.children[0].getComponent(cc.Label).string = "辅助轮协议启动中";
+            this.changeTheBg(true);
+            return ;
+        }
+    }
+
+    public displayWheel() {
+        this.wheel.node.children[1].getComponent(cc.Label).string = "协议剩余次数:" + this.helpWheel;
+        if (this.helpWheel <= 0) {
+            this.auto.autoMode = false;
+            this.wheel.node.children[0].getComponent(cc.Label).string = "辅助轮协议关闭中";
+            this.changeTheBg(false);
+        }
+    }
+
+    public changeTheBg(exchange: boolean) {
+        let self = this;
+        if (exchange) {
+            cc.loader.loadRes("bg/background2", cc.SpriteFrame, function(err, sf) {
+                self.bg.getComponent(cc.Sprite).spriteFrame = sf;
+            });
+        } else {
+            cc.loader.loadRes("bg/background", cc.SpriteFrame, function(err, sf) {
+                self.bg.getComponent(cc.Sprite).spriteFrame = sf;
+            });
+        }
     }
 }

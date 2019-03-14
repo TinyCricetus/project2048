@@ -43,9 +43,28 @@ export class GridAnimal {
         let destination: cc.Vec2 = keyNode.position;
         this.length = gridArray.length;
 
+        let dir1: number = Math.floor(Math.random() * 1000) % 2;
+        let dir2: number = Math.floor(Math.random() * 1000) % 2;
+        if (dir1 == 0) {
+            dir1 = -1;
+        } else {
+            dir1 = 1;
+        }
+        if (dir2 == 0) {
+            dir2 = -1
+        } else {
+            dir2 = 1;
+        }
+
         for (let i = 0; i < gridArray.length; i++) {
-            gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination).easing(cc.easeSineIn()),
-                cc.callFunc(this.continueFlag, this)));
+            if (this.gridAnimalControl.gameScene.auto.autoMode) {
+                gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination).easing(cc.easeBounceOut()),
+                    cc.callFunc(this.continueFlag, this)));
+            } else {
+                gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination.sub(cc.v2(100 * dir1, 100 * dir2))).easing(cc.easeBackInOut()),
+                cc.moveTo(0.5, destination).easing(cc.easeBackInOut()),
+                    cc.callFunc(this.continueFlag, this)));
+            }
         }
 
         // let rootNode: cc.Node = this.keyNode.parent;

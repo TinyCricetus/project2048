@@ -451,7 +451,7 @@ export class GridAnimalControl {
     }
 
 
-    public figureOutScore(dismissLimit: number, nodeCount: number, gridNumber: number) {
+    public figureOutScore(dismissLimit: number, nodeCount: number, gridNum: number) {
         //如果是用户点击落子的话，消除限制是2， 如果是电脑合成落子的话，消除限制是1
         if (dismissLimit == 2) {
             this.multipleRecord = 1;
@@ -459,6 +459,10 @@ export class GridAnimalControl {
             this.multipleRecord += 1;
         }
         this.addScore = ScoreTable.times[this.multipleRecord] * ScoreTable.multiple[nodeCount]
-            * ScoreTable.basicScore[gridNumber];
+            * ScoreTable.basicScore[gridNum];
+        // if (typeof this.addScore != "number") {
+        //     cc.log("分数又出错了！");
+        //     this.addScore = Number(0);
+        // }
     }
 }
