@@ -43,19 +43,9 @@ export class GridAnimal {
         let destination: cc.Vec2 = keyNode.position;
         this.length = gridArray.length;
 
-        let dir1: number = Math.floor(Math.random() * 1000) % 2;
-        let dir2: number = Math.floor(Math.random() * 1000) % 2;
-        if (dir1 == 0) {
-            dir1 = -1;
-        } else {
-            dir1 = 1;
-        }
-        if (dir2 == 0) {
-            dir2 = -1
-        } else {
-            dir2 = 1;
-        }
-
+        let dir1: number = this.getRandomDir();
+        let dir2: number = this.getRandomDir();
+        
         for (let i = 0; i < gridArray.length; i++) {
             if (this.gridAnimalControl.gameScene.auto.autoMode) {
                 gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination).easing(cc.easeBounceOut()),
@@ -106,5 +96,15 @@ export class GridAnimal {
 
     public extra() {
         this.gridAnimalControl.nextStep();
+    }
+
+    public getRandomDir(): number {
+        let dir: number = Math.floor(Math.random() * 1000) % 2;
+        if (dir == 0) {
+            dir = -1;
+        } else {
+            dir = 1;
+        }
+        return dir;
     }
 }

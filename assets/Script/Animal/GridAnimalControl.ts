@@ -116,7 +116,7 @@ export class GridAnimalControl {
         // if (this.dismissLimit == 1) {
         //     return;
         // }
-        let tempArray: cc.Vec2[] = this.getAroundGrid(this.chaneToShiftPos(pos));
+        let tempArray: cc.Vec2[] = this.getAroundGrid(pos);
         for (let i of tempArray) {
             this.aroundGrid.push(i);
         }
@@ -270,7 +270,7 @@ export class GridAnimalControl {
     //2048爆炸
     public startToExplosion(node: cc.Node, pos: cc.Vec2) {
         this.initCheckStatus();//初始化状态点
-        let aroundArray: cc.Vec2[] = this.getAroundGrid(this.chaneToShiftPos(pos));
+        let aroundArray: cc.Vec2[] = this.getAroundGrid(pos);
         this.recordArray.push(pos);
         for (let i of aroundArray) {
             if (this.checkExplosionPos(i)) {
@@ -362,7 +362,7 @@ export class GridAnimalControl {
             //         }
             //     }
             // }
-            let tempArray: cc.Vec2[] = this.getAroundGrid(this.toolArray[temp.x][temp.y]);
+            let tempArray: cc.Vec2[] = this.getAroundGrid(this.changeToStandardPos(this.toolArray[temp.x][temp.y]));
             for (let i = 0; i < tempArray.length; i++) {
                 if (this.checkPos(tempArray[i], temp, style)) {
                     sameCount++;
@@ -425,9 +425,10 @@ export class GridAnimalControl {
 
     /**
      * 用于返回传入节点的周围结点
-     * @param pos 输入的中心位置(注意是偏移位置)
+     * @param temp 输入的中心位置
      */
-    public getAroundGrid(pos: cc.Vec2): Array<cc.Vec2> {
+    public getAroundGrid(temp: cc.Vec2): Array<cc.Vec2> {
+        let pos: cc.Vec2 = this.changeToShiftPos(temp);
         let aroundArray: cc.Vec2[] = [];
         aroundArray.push(cc.v2(pos.x + 1, pos.y - this.shiftValue));
         aroundArray.push(cc.v2(pos.x + 1, pos.y + this.shiftValue));
@@ -446,7 +447,7 @@ export class GridAnimalControl {
         return cc.v2(pos.x, pos.y - Math.abs(pos.x - this.centerPoint.x) * 0.5);
     }
 
-    public chaneToShiftPos(pos: cc.Vec2): cc.Vec2 {
+    public changeToShiftPos(pos: cc.Vec2): cc.Vec2 {
         return cc.v2(pos.x, pos.y + Math.abs(pos.x - this.centerPoint.x) * 0.5);
     }
 

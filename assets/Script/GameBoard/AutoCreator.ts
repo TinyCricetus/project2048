@@ -90,8 +90,7 @@ export class AutoCreator {
             }
             let temp: cc.Vec2 = this.emptyPos[i + j];
             //获取这个存在点周围的六个点
-            let nodeArray: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(
-                this.gameScene.gridAnimalControl.chaneToShiftPos(cc.v2(temp.x, temp.y)));
+            let nodeArray: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(cc.v2(temp.x, temp.y));
             //开始进行方案判断
             this.judgeValue(nodeArray, cc.v2(temp.x, temp.y));
             if (this.caseCount >= 3) {

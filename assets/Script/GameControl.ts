@@ -104,8 +104,7 @@ export class GameControl {
 
     public recordAndJudge(type: number): boolean {
         
-        let aroundPos: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(
-            this.gameScene.gridAnimalControl.chaneToShiftPos(this.placePos));
+        let aroundPos: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(this.placePos);
             //注意如果位置被旋转过，应该使用旋转后的位置
         if (this.gameScene.isSpin == 1) {
             switch(type) {
@@ -371,8 +370,8 @@ export class GameControl {
      * @param type 
      */
     public getAnotherGrid(pos: cc.Vec2, type: number): cc.Vec2 {
-        let temp: cc.Vec2 = this.gameScene.gridAnimalControl.chaneToShiftPos(pos);
-        let aroundArray: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(temp);
+        //let temp: cc.Vec2 = this.gameScene.gridAnimalControl.changeToShiftPos(pos);
+        let aroundArray: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(pos);
         switch (type) {
             case 2:
                 return aroundArray[3];
