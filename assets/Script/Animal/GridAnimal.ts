@@ -45,14 +45,13 @@ export class GridAnimal {
 
         let dir1: number = this.getRandomDir();
         let dir2: number = this.getRandomDir();
-        
+        //cc.moveTo(0.5, destination.sub(cc.v2(100 * dir1, 100 * dir2))).easing(cc.easeBackInOut()),
         for (let i = 0; i < gridArray.length; i++) {
             if (this.gridAnimalControl.gameScene.auto.autoMode) {
                 gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination).easing(cc.easeBounceOut()),
                     cc.callFunc(this.continueFlag, this)));
             } else {
-                gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination.sub(cc.v2(100 * dir1, 100 * dir2))).easing(cc.easeBackInOut()),
-                cc.moveTo(0.5, destination).easing(cc.easeBackInOut()),
+                gridArray[i].runAction(cc.sequence(cc.moveTo(0.5, destination).easing(cc.easeBackInOut()),
                     cc.callFunc(this.continueFlag, this)));
             }
         }

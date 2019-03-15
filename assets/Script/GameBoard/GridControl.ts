@@ -83,11 +83,20 @@ export class GridControl {
         }
         if (this.canRotate && this.actionFlag) {
             this.actionFlag = false;
-            this.gameGrid.runAction(cc.sequence(cc.rotateBy(0.5, 180).easing(cc.easeBounceOut()),
-                cc.callFunc(this.judgeAction, this)));
-            //小数字跟着旋转
-            for (let i of this.gameGrid.children) {
-                i.runAction(cc.rotateBy(0.5, 180).easing(cc.easeBounceIn()));
+            if (this.gameScene.auto.autoMode) {
+                this.gameGrid.runAction(cc.sequence(cc.rotateBy(0.5, 180).easing(cc.easeBounceOut()),
+                    cc.callFunc(this.judgeAction, this)));
+                //小数字跟着旋转
+                for (let i of this.gameGrid.children) {
+                    i.runAction(cc.rotateBy(0.5, 180).easing(cc.easeBounceIn()));
+                }
+            } else {
+                this.gameGrid.runAction(cc.sequence(cc.rotateBy(0.5, 180).easing(cc.easeBackOut()),
+                    cc.callFunc(this.judgeAction, this)));
+                //小数字跟着旋转
+                for (let i of this.gameGrid.children) {
+                    i.runAction(cc.rotateBy(0.5, 180).easing(cc.easeBackOut()));
+                }
             }
             //注意标记要让落子方块交换坐标
             this.gameScene.isSpin *= -1;
