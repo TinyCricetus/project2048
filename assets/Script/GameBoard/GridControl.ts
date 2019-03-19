@@ -8,7 +8,7 @@ import { GameBoardImpl } from "./BoardImpl";
  */
 export class GridControl {
 
-    public initPosNode: cc.Node = null;
+    public shapeCreatorNode: cc.Node = null;
     public gameScene: GameScene = null;
     public gameGrid: cc.Node = null;
 
@@ -29,10 +29,10 @@ export class GridControl {
 
     public init(): void {
 
-        this.initPosNode = this.gameScene.shapeCraetor;
+        this.shapeCreatorNode = this.gameScene.shapeCraetor;
         //初始化位置坐标
         this.gameGrid = this.gameScene.gameGrid;
-        this.gameGrid.position = this.initPosNode.position;
+        this.gameGrid.position = this.shapeCreatorNode.position;
 
         //对游戏场景进行监听
         this.gameScene.node.on(cc.Node.EventType.TOUCH_START, this.touchedBegin.bind(this));
@@ -42,19 +42,19 @@ export class GridControl {
 
 
     public touchedBegin(event: cc.Event.EventTouch): void {
-        if (this.initPosNode.childrenCount <= 0) {
+        if (this.gameGrid.childrenCount <= 0) {
             return ;
         }
         this.pos = event.getLocation();
-        this.pos = this.initPosNode.convertToNodeSpace(this.pos);
-        if ((this.pos.x > 0 && this.pos.x < this.initPosNode.width) &&
-            this.pos.y > 0 && this.pos.y < this.initPosNode.height) {
+        this.pos = this.shapeCreatorNode.convertToNodeSpace(this.pos);
+        if ((this.pos.x > 0 && this.pos.x < this.shapeCreatorNode.width) &&
+            this.pos.y > 0 && this.pos.y < this.shapeCreatorNode.height) {
             this.canRotate = true;
         }
     }
 
     public touchedMove(event: cc.Event.EventTouch): void {
-        if (this.initPosNode.childrenCount <= 0) {
+        if (this.gameGrid.childrenCount <= 0) {
             return ;
         }
 
@@ -63,9 +63,9 @@ export class GridControl {
         this.board.judgeSuperposition(tempPos);
 
         if (this.canRotate) {
-            let temp: cc.Vec2 = this.initPosNode.convertToNodeSpace(event.getLocation());
-            if (temp.x < 0 || temp.x > this.initPosNode.width ||
-                temp.y < 0 || temp.y > this.initPosNode.height) {
+            let temp: cc.Vec2 = this.shapeCreatorNode.convertToNodeSpace(event.getLocation());
+            if (temp.x < 0 || temp.x > this.shapeCreatorNode.width ||
+                temp.y < 0 || temp.y > this.shapeCreatorNode.height) {
                 this.canDrag = true;
                 this.canRotate = false;
             }
@@ -78,7 +78,7 @@ export class GridControl {
     }
 
     public touchedEnd(event: cc.Event.EventTouch): void {
-        if (this.initPosNode.childrenCount <= 0) {
+        if (this.gameGrid.childrenCount <= 0) {
             return ;
         }
         if (this.canRotate && this.actionFlag) {
@@ -106,7 +106,7 @@ export class GridControl {
         }
         this.canDrag = false;
         //一旦松开，控制器因该马上回到形状发生器位置
-        this.gameGrid.position = this.initPosNode.position;
+        this.gameGrid.position = this.shapeCreatorNode.position;
         //一旦松开，先判断坐标再执行落子操作
         let judge_1: boolean = false;
         let judge_2: boolean = false;

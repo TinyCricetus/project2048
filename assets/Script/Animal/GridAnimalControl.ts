@@ -57,10 +57,10 @@ export class GridAnimalControl {
 
     //相关数组初始化
     public initArray(length: number) {
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i < length + 1; i++) {
             this.gridAnimalArray[i] = [];
             this.toolArray[i] = [];
-            for (let j = 0; j < length; j++) {
+            for (let j = 0; j < length + 1; j++) {
                 let node: cc.Node = null;
                 this.gridAnimalArray[i][j] = node;
                 this.toolArray[i][j] = cc.v2(i, j);

@@ -7,8 +7,8 @@ import { GameBoardImpl } from "./BoardImpl";
  * 游戏全局逻辑控制
  */
 export class CreatorControl {
-    private gameScene: GameScene = null;
 
+    private gameScene: GameScene = null;
     private testIndex: number = 0;
 
     constructor(gameScene: GameScene) {
@@ -50,7 +50,27 @@ export class CreatorControl {
         return gridNum[this.testIndex];
     }
 
-    public autoCreator() {
+    private randomCreator() {
+        let type: number = Math.floor(Math.random() * 1000) % 4 + 1;
+        let num1: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
+        if (num1 >= NUMBER2048) {
+            num1 -= 2;
+        }
+        let num2: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
+        if (num2 >= NUMBER2048) {
+            num2 -= 2;
+        }
+
+        if (type == 1) {
+            //生成一型号方块
+            this.gameScene.creatorGrid(num1);
+        } else {
+            this.gameScene.creatorCombineGrid([num1, num2], type);
+        }
+    }
+
+
+    private autoCreator() {
         // //测试时启用
         // let type = this.testGridType();
         // let v: cc.Vec2 = this.testGridNum();
@@ -74,25 +94,6 @@ export class CreatorControl {
             this.gameScene.creatorGrid(num.x);
         } else {
             this.gameScene.creatorCombineGrid([num.x, num.y], type);
-        }
-    }
-
-    public randomCreator() {
-        let type: number = Math.floor(Math.random() * 1000) % 4 + 1;
-        let num1: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
-        if (num1 >= NUMBER2048) {
-            num1 -= 2;
-        }
-        let num2: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
-        if (num2 >= NUMBER2048) {
-            num2 -= 2;
-        }
-
-        if (type == 1) {
-            //生成一型号方块
-            this.gameScene.creatorGrid(num1);
-        } else {
-            this.gameScene.creatorCombineGrid([num1, num2], type);
         }
     }
 }

@@ -25,6 +25,9 @@ export class AutoCreator {
     private length: number = 0;
     private board: GameBoardImpl = null;
 
+    private gridProbability: number[] = null;//四种方块的概率设定
+    private gridType: number[] = null;
+
     public constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
         this.board = this.gameScene.board;
@@ -38,6 +41,9 @@ export class AutoCreator {
         this.gridNum = [];
         this.emptyPos = [];
         this.length = this.gameScene.length;
+
+        this.gridProbability = [25, 30, 22, 23];
+        this.gridType = [2, 1, 3, 4];
     }
 
     public clear() {
@@ -73,7 +79,7 @@ export class AutoCreator {
     }
 
 
-    public figureSolve() {
+    private figureSolve() {
         let length: number = this.emptyPos.length;
         let i = Math.floor(Math.random() * 1000) % length;
 
@@ -92,7 +98,7 @@ export class AutoCreator {
         }
     }
 
-    public judgeValue(posArray: cc.Vec2[], center: cc.Vec2) {
+    private judgeValue(posArray: cc.Vec2[], center: cc.Vec2) {
         let emptyCount: number = 0;
         let emptyIndex: number[] = [];
         let fullIndex: number[] = [];
@@ -170,7 +176,7 @@ export class AutoCreator {
         }
     }
 
-    public emptyCase(style: number, type: number) {
+    private emptyCase(style: number, type: number) {
         let style2: number = 0;
         if (this.autoMode) {
             style2 = style + this.getPositiveOrNagtive();
@@ -194,23 +200,24 @@ export class AutoCreator {
 
     //随机方案
     public randomCase() {
-        let numType: number = Math.floor(Math.random() * 1000) % 3;//随机类型
+        // let numType: number = Math.floor(Math.random() * 1000) % 3;//随机类型
+        let numType: number = this.getGridType();
         let num: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;//随机款式
         if (num >= 9) {
-            num = num - numType - 1;
+            num -= numType;
         }
         let num2: number = Math.floor(Math.random() * 1000) % this.gameScene.theMaxStyle + 1;
         if (num2 >= 9) {
-            num2 = num2 - numType - 1;
+            num2 -= numType;
         }
-        if (numType < 1) {
+        if (numType == 1) {
             this.addCase(cc.v2(num, 0), 1);
         } else {
-            this.addCase(cc.v2(num, num2), numType + 2);
+            this.addCase(cc.v2(num, num2), numType);
         }
     }
 
-    public getPositiveOrNagtive(): number {
+    private getPositiveOrNagtive(): number {
         let num: number = Math.floor(Math.random() * 1000) % 3;
         if (num == 0) {
             return -1;
@@ -222,9 +229,22 @@ export class AutoCreator {
     }
 
     //增加解决方案
-    public addCase(num: cc.Vec2, type: number) {
+    private addCase(num: cc.Vec2, type: number) {
         this.caseCount++;
         this.gridNum.push(num);
         this.typeNum.push(type);
     }
+
+
+    private getGridType(): number {
+        let num: number = Math.random() * 100;
+        for (let i = 0; i < this.gridProbability.length; i++) {
+            if (this.gridProbability[i] >= num) {
+                cc.log(this.gridType[i]);
+                return this.gridType[i];
+            }
+        }
+        return this.gridType[this.gridType.length - 1];
+    }
+
 }

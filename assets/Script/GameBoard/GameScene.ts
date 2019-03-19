@@ -87,7 +87,7 @@ export class GameScene extends cc.Component {
         // let style: number[] = [1, 2];
         // this.creatorCombineGrid(style, 3);
         
-        //生成游戏主逻辑控制
+        //生成游戏方块生成控制
         this.creatorControl = new CreatorControl(this);
         //生成方块控制
         this.gridControl = new GridControl(this);
@@ -104,7 +104,7 @@ export class GameScene extends cc.Component {
         this.displayWheel();
     }
 
-    public gridAddToArray(pos: cc.Vec2): void {
+    private gridAddToArray(pos: cc.Vec2): void {
         let tempGrid: cc.Node = null;
         tempGrid = this.nodePool.getNode();
         tempGrid.position = pos;
@@ -113,7 +113,7 @@ export class GameScene extends cc.Component {
     }
 
     //将方块渲染上画板
-    public drawGrid(): void {
+    private drawGrid(): void {
         for (let i = 0; i < this.length; i++) {
             for (let j = 0; j < this.length; j++) {
                 if (this.board.getRealPos(cc.v2(i, j)) == null) {
@@ -251,7 +251,7 @@ export class GameScene extends cc.Component {
      * @param index 
      * @param style 
      */
-    public addGrid(index: number, style: number, type: number, callback: Function) {
+    private addGrid(index: number, style: number, type: number, callback: Function) {
         let tempNode: cc.Node = this.shapeCeartor.creatorShape(style, type);
         this.node.addChild(tempNode);
         tempNode.position = this.bgGridArray[index].position;

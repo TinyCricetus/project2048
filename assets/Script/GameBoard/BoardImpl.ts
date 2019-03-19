@@ -5,9 +5,7 @@ import { GameScene } from "./GameScene";
 
 
 export class GameBoardImpl implements IGameBoard {
-
-
-
+    
     public sourcePos: cc.Vec2 = null;//格子坐标原点(数组坐标)
     
     private maze: number[][] = [];//棋盘,位置-1表示没有位置，位置0表示背景(可放置方块)
@@ -86,7 +84,6 @@ export class GameBoardImpl implements IGameBoard {
         }
     }
 
-
     public judgeSuperposition(controlPos: cc.Vec2): void {
         //cc.log(controlPos);
         // //正在操控方块的坐标信息,注意使用时应该注意转换
@@ -144,7 +141,6 @@ export class GameBoardImpl implements IGameBoard {
         }
     }
 
-
     public getAroundGrid(temp: cc.Vec2): cc.Vec2[] {
         let pos: cc.Vec2 = this.changToShiftPos(temp);
         let aroundArray: cc.Vec2[] = [];
@@ -167,7 +163,6 @@ export class GameBoardImpl implements IGameBoard {
     public changToShiftPos(pos: cc.Vec2): cc.Vec2 {
         return cc.v2(pos.x, pos.y + Math.abs(pos.x - this.sourcePos.x) * 0.5);
     }
-
 
     public fitPosition(node: cc.Node[], type: number): void {
         let posLeft: cc.Vec2 = null;
@@ -207,8 +202,6 @@ export class GameBoardImpl implements IGameBoard {
             }
         }
     }
-
-
 
     public arrayToMaze(index: number): cc.Vec2 {
         let pos: cc.Vec2 = cc.v2();
@@ -255,7 +248,6 @@ export class GameBoardImpl implements IGameBoard {
         return index;
     }
 
-
     public constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
         this.init(this.gameScene.centerToEdge);
@@ -290,7 +282,7 @@ export class GameBoardImpl implements IGameBoard {
         this.figureRealPosition(length);
     }
 
-    public moveToChess() {
+    public moveToChess(): void {
         if (this.gameScene.combineGridType == 1) {
             if (this.canPlace && this.getMaze(this.placeA) == EMPTY) {
                 //这里编辑落子程序
@@ -426,9 +418,6 @@ export class GameBoardImpl implements IGameBoard {
             return ((this.getMaze(this.placeA) == EMPTY) && (this.getMaze(this.placeB) == EMPTY));
         }
     }
-
-
-
 
     /**
      * 判断是否有重合，注意统一两个坐标的参考系
