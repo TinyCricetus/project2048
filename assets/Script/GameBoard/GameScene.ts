@@ -1,12 +1,13 @@
-import { Position } from "./Position";
 import { Grid } from "./Grid";
 import {ShapeCreator} from "./ShapeCreator";
 import { GridPool } from "./GridPool";
-import { GameControl } from "../GameControl";
+import { CreatorControl } from "./CreatorControl";
 import { GridControl } from "./GridControl";
 import { GridAnimalControl } from "../Animal/GridAnimalControl";
 import { FULL } from "./GridData";
 import { AutoCreator } from "./autoCreator";
+import { GameBoardImpl } from "./BoardImpl";
+import { GridAnimal } from "../Animal/GridAnimal";
 
 const { ccclass, property } = cc._decorator;
 
@@ -33,31 +34,35 @@ export class GameScene extends cc.Component {
     @property(cc.Node)
     bg: cc.Node = null;
 
-    public gridControl: GridControl = null;
-    public shapeCeartor: ShapeCreator = null;//形状生成器
-    public gameControl: GameControl = null;
+    
+    public creatorControl: CreatorControl = null;
     public nodePool: GridPool = null;
-    public position: Position = null;
-    public gridArray: Array<cc.Node> = new Array<cc.Node>();
+    public bgGridArray: Array<cc.Node> = new Array<cc.Node>();
     public gridAnimalControl: GridAnimalControl = null;
-    public gridAnimalArray: cc.Node[][] = null;
     public theMaxStyle: number = 1;
     public score: number = 0;
-    public isCombineGrid: boolean = null;
     public combineGridType: number = 0;
     public isSpin: number = -1;//联合方块是否旋转过，1代表旋转过，-1代表没有旋转过
     public auto: AutoCreator = null;
     public helpWheel: number = 0;
+    public length: number = 0;
+    public board: GameBoardImpl = null;
+
+    private gridControl: GridControl = null;
+    private shapeCeartor: ShapeCreator = null;//形状生成器
 
     //一波加载猛如虎，一看时间两秒五
     public onLoad(): void {
+
+        //设定棋盘扫面区域，例如区域1-7，扫描区域设置为0-8
+        this.length = this.centerToEdge * 2 + 2;
+
 
         //加载本地分数储存
         let localScore: number = Number(cc.sys.localStorage.getItem("score"));
         if (localScore == 0) {
             cc.sys.localStorage.setItem("score", 0);
         } else {
-            
             this.score = localScore;
             this.score = Math.floor(this.score / 2);
         }
@@ -67,36 +72,28 @@ export class GameScene extends cc.Component {
         this.nodePool.initNodePool(this.gridPrefab);//初始化结点池
         //创建形状生成器
         this.shapeCeartor = new ShapeCreator(this.nodePool);
-        //创建全局棋盘
-        this.position = new Position();
-        //如果开始没有给出格数，那就使用默认格数2
-        this.position.positionInit(this.centerToEdge == 0 ? 2 : this.centerToEdge);
+
+        //创建棋盘控制器
+        this.board = new GameBoardImpl(this);
+
         //布置方块背景
         this.drawGrid();
-        //初始化，第一个方块不给联合类型
-        this.isCombineGrid = false;
         //初始化第一个方块类型为1型
         this.combineGridType = 1;
 
         //创造一个方块
         this.creatorGrid(1);
-        
-        
         // //创造一个联合方块
         // let style: number[] = [1, 2];
         // this.creatorCombineGrid(style, 3);
-
+        
         //生成游戏主逻辑控制
-        this.gameControl = new GameControl(this);
+        this.creatorControl = new CreatorControl(this);
         //生成方块控制
         this.gridControl = new GridControl(this);
-        
-        //创建特效模块
+        //生成特效模块
         this.gridAnimalControl = new GridAnimalControl(this);
-        //获取特效数组引用
-        this.gridAnimalArray = this.gridAnimalControl.gridAnimalArray;
-
-        //开始启用逻辑方块生成控制
+        //启用方块生成控制
         this.auto = new AutoCreator(this);
         
         //分数归零！
@@ -107,52 +104,40 @@ export class GameScene extends cc.Component {
         this.displayWheel();
     }
 
-    // /**
-    //  * 每帧刷新应该执行的操作
-    //  * @param dt 每帧刷新的时间间隔
-    //  */
-    // public update(dt) {
-        
-    // }
-
     public gridAddToArray(pos: cc.Vec2): void {
         let tempGrid: cc.Node = null;
         tempGrid = this.nodePool.getNode();
         tempGrid.position = pos;
         //将方块放入方块数组
-        this.gridArray.push(tempGrid);
+        this.bgGridArray.push(tempGrid);
     }
 
     //将方块渲染上画板
     public drawGrid(): void {
-        let pos: cc.Vec2[][] = this.position.realPos;
-        for (let i = 0; i < pos.length; i++) {
-            for (let j = 0; j < pos[i].length; j++) {
-                if (pos[i][j] == null) {
+        for (let i = 0; i < this.length; i++) {
+            for (let j = 0; j < this.length; j++) {
+                if (this.board.getRealPos(cc.v2(i, j)) == null) {
                     continue;
                 } else {
                     //将坐标赋值给方块坐标
-                    this.gridAddToArray(pos[i][j]);
+                    this.gridAddToArray(this.board.getRealPos(cc.v2(i, j)));
                 }
             }
         }
         //加入结点
-        for (let i = 0; i < this.gridArray.length; i++) {
+        for (let i = 0; i < this.bgGridArray.length; i++) {
             //cc.log(this.gridArray[i]);
-            if (this.gridArray[i].position == this.position.sourcePos) {
+            if (this.bgGridArray[i].position == this.board.sourcePos) {
                 continue;
             }
-            this.node.addChild(this.gridArray[i]);
+            this.node.addChild(this.bgGridArray[i]);
         }
-        //cc.log("看一下背景方块数量:" + this.gridArray.length);
     }
 
     /**
      * 创造方块并加入到方块产生区
      */
     public creatorGrid(style: number): void {
-        //设置为非联合类型
-        this.isCombineGrid = false;
         this.combineGridType = 1;
         let tempNode: cc.Node = null;
         tempNode = this.shapeCeartor.creatorShape(style, 1);
@@ -167,22 +152,20 @@ export class GameScene extends cc.Component {
      * @param type 
      */
     public creatorCombineGrid(style: number[], type: number) {
-        //设置为联合类型
-        this.isCombineGrid = true;
         this.combineGridType = type;
         let tempNode: cc.Node[] = [];
         tempNode = this.shapeCeartor.creatorCombineShape(style, type);
         switch(type) {
             case 2:
-            this.position.fitPosition(tempNode, 2);
+            this.board.fitPosition(tempNode, 2);
             break;
 
             case 3:
-            this.position.fitPosition(tempNode, 3);
+            this.board.fitPosition(tempNode, 3);
             break;
 
             case 4:
-            this.position.fitPosition(tempNode, 4);
+            this.board.fitPosition(tempNode, 4);
             break;
 
             default:break;
@@ -224,13 +207,6 @@ export class GameScene extends cc.Component {
      * @param type 
      */
     public addCombineGrid(index: number[], style: number[], type: number) {
-        // let tempNode: cc.Node = this.shapeCeartor.creatorShape(style, type);
-        // this.node.addChild(tempNode);
-        // tempNode.position = this.gridArray[index].position;
-
-        // //加入动画组
-        // let pos: cc.Vec2 = this.gameControl.arrayIndexToMaze(index);
-        // this.gridAnimalControl.addToAnimalArray(tempNode, pos);
 
         let tempNode: cc.Node[] = this.shapeCeartor.creatorCombineShape(style, type);
         for (let i of tempNode) {
@@ -239,18 +215,16 @@ export class GameScene extends cc.Component {
         
         let pos: cc.Vec2[] = [];
         for (let i of index) {
-            pos.push(this.gameControl.arrayIndexToMaze(i));
+            pos.push(this.board.arrayToMaze(i));
         }
 
         for (let i = 0; i < tempNode.length; i++) {
-            tempNode[i].position = this.gridArray[index[i]].position;
+            tempNode[i].position = this.bgGridArray[index[i]].position;
         }   
 
         //加入动画组
         this.gridAnimalControl.addCombineToAnimalArray(tempNode, pos);
     }
-
-
 
     /**
      * 联系控制棋盘的主场景落子函数
@@ -280,10 +254,10 @@ export class GameScene extends cc.Component {
     public addGrid(index: number, style: number, type: number, callback: Function) {
         let tempNode: cc.Node = this.shapeCeartor.creatorShape(style, type);
         this.node.addChild(tempNode);
-        tempNode.position = this.gridArray[index].position;
+        tempNode.position = this.bgGridArray[index].position;
 
         //加入动画组
-        let pos: cc.Vec2 = this.gameControl.arrayIndexToMaze(index);
+        let pos: cc.Vec2 = this.board.arrayToMaze(index);
         this.gridAnimalControl.addToAnimalArray(tempNode, pos, callback);
     }
 
@@ -295,7 +269,7 @@ export class GameScene extends cc.Component {
     public addAloneGridToScene(pos: cc.Vec2, style: number, type, callback: Function) {
         //注意从合成落子的地方是消除限制是2
         this.gridAnimalControl.dismissLimit = 1;
-        let index = this.gameControl.mazeToArrayIndex(pos);
+        let index = this.board.mazeToArray(pos);
         if (style >= 11) {
             cc.log("2048启动爆炸！");
             style = 11;
@@ -304,13 +278,13 @@ export class GameScene extends cc.Component {
         }
         //记录一下已经存在的更大的数字
         this.theMaxStyle = this.theMaxStyle > style ? this.theMaxStyle : style;
-        this.position.maze[pos.x][pos.y] = FULL;
+        this.board.setMaze(pos, FULL);
         this.addGrid(index, style, type, callback);
     }
 
     //用于单元测试的测试函数，勿动
     public unitTest(): cc.Vec2 {
-        return this.gameControl.arrayIndexToMaze(12);
+        return this.board.arrayToMaze(12);
     }
 
     public gameOverFunc() {

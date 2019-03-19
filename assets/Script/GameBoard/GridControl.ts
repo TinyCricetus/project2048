@@ -1,6 +1,7 @@
 import { GameScene } from "./GameScene";
 import { WIDTH, HEIGHT } from "./GridData";
 import { Grid } from "./Grid";
+import { GameBoardImpl } from "./BoardImpl";
 
 /**
  * 用于控制方块
@@ -15,12 +16,14 @@ export class GridControl {
     public actionFlag: boolean = true;
 
     public canDrag: boolean = false;//拖动
-    private canRotate: boolean = false;//旋转
 
+    private canRotate: boolean = false;//旋转
     private gridRealPos: cc.Vec2[][] = null;
+    private board: GameBoardImpl = null;
 
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
+        this.board = this.gameScene.board;
         this.init();
     }
 
@@ -30,9 +33,6 @@ export class GridControl {
         //初始化位置坐标
         this.gameGrid = this.gameScene.gameGrid;
         this.gameGrid.position = this.initPosNode.position;
-
-        //初始化背景方块真实坐标
-        this.gridRealPos = this.gameScene.position.realPos;
 
         //对游戏场景进行监听
         this.gameScene.node.on(cc.Node.EventType.TOUCH_START, this.touchedBegin.bind(this));
@@ -57,14 +57,15 @@ export class GridControl {
         if (this.initPosNode.childrenCount <= 0) {
             return ;
         }
-        this.pos = event.getLocation();
-        this.pos = this.initPosNode.convertToNodeSpace(this.pos);
-        //执行位置判断
-        this.gameScene.gameControl.judgePos();
+
+        let tempPos = this.gameGrid.convertToWorldSpaceAR(this.gameGrid.children[0].position);
+        tempPos = this.gameScene.node.convertToNodeSpaceAR(tempPos);
+        this.board.judgeSuperposition(tempPos);
 
         if (this.canRotate) {
-            if (this.pos.x < 0 || this.pos.x > this.initPosNode.width ||
-                this.pos.y < 0 || this.pos.y > this.initPosNode.height) {
+            let temp: cc.Vec2 = this.initPosNode.convertToNodeSpace(event.getLocation());
+            if (temp.x < 0 || temp.x > this.initPosNode.width ||
+                temp.y < 0 || temp.y > this.initPosNode.height) {
                 this.canDrag = true;
                 this.canRotate = false;
             }
@@ -72,7 +73,6 @@ export class GridControl {
             if (this.canDrag) {
                 let pos: cc.Vec2 = event.getLocation();
                 this.gameGrid.position = this.gameScene.node.convertToNodeSpaceAR(pos);
-                //cc.log(this.node.position.x + "," + this.node.position.y);
             }
         }
     }
@@ -100,76 +100,33 @@ export class GridControl {
             }
             //注意标记要让落子方块交换坐标
             this.gameScene.isSpin *= -1;
-            //cc.log(`目前是${this.gameScene.isSpin}状态`);
-            
             this.canRotate = false;
+
+            cc.log(`目前是${this.gameScene.isSpin}状态`);
         }
         this.canDrag = false;
         //一旦松开，控制器因该马上回到形状发生器位置
         this.gameGrid.position = this.initPosNode.position;
-        //this.gameGrid.rotation = 0;//旋转归位
         //一旦松开，先判断坐标再执行落子操作
         let judge_1: boolean = false;
         let judge_2: boolean = false;
         let pos: cc.Vec2 = this.gameScene.node.convertToNodeSpaceAR(event.getLocation());
         if (this.gameScene.combineGridType == 1) {
-            judge_1 = this.judgeMoveToChess(pos);
+            judge_1 = this.board.ifMoveToBoard(pos);
             judge_2 = true;
         } else {
-            //对判断坐标进行提前处理，使得旋转不影响坐标判断
-            //let pos_0: cc.Vec2 = this.dealPosition(this.gameGrid.children[0].position, this.gameGrid.children[0].getComponent("Grid").gridType);
             let pos_1: cc.Vec2 = pos.add(this.gameGrid.children[0].position);
-            //pos_0 = this.dealPosition(this.gameGrid.children[1].position, this.gameGrid.children[0].getComponent("Grid").gridType);
             let pos_2: cc.Vec2 = pos.add(this.gameGrid.children[1].position);
-            judge_1 = this.judgeMoveToChess(pos_1);
-            judge_2 = this.judgeMoveToChess(pos_2);
-
-            //cc.log(pos_1 + " " + pos_2);
-        }
-        if (this.gameScene.combineGridType < 1 || this.gameScene.combineGridType > 4) {
-            cc.log("类型错误!");
+            judge_1 = this.board.ifMoveToBoard(pos_1);
+            judge_2 = this.board.ifMoveToBoard(pos_2);
         }
         if (judge_1 && judge_2) {
-            this.gameScene.gameControl.moveToChess();
+            this.board.moveToChess();
         }
     }
-
-    // public dealPosition(pos: cc.Vec2, gridType: number): cc.Vec2{
-    //     if (gridType == 2) {
-    //         return cc.v2(-pos.x, pos.y);
-    //     } else if (gridType == 3 || gridType == 4) {
-    //         return cc.v2(-pos.x, -pos.y);
-    //     } else {
-    //         return pos;
-    //     }
-    // }
 
     //用于动作回调，控制动作执行完毕后才可执行下一个动作
     public judgeAction(): void {
         this.actionFlag = true;
-    }
-
-    public judgeMoveToChess(pos: cc.Vec2): boolean {
-        let ret: boolean = false;
-        for (let i = 0; i < this.gridRealPos.length; i++) {
-            for (let j = 0; j < this.gridRealPos[i].length; j++) {
-                if (this.gridRealPos[i][j] != null) {
-                    ret = this.isContain(this.gridRealPos[i][j], pos);
-                    //cc.log(ret);
-                    if (ret) {
-                        return ret;
-                    }
-                }
-            }
-        }
-        return ret;
-    }
-
-    public isContain(pos: cc.Vec2, pos2: cc.Vec2): boolean {
-        if ((Math.abs(pos.x - pos2.x) < WIDTH / 2) &&
-            (Math.abs(pos.y - pos2.y) < HEIGHT / 2)) {
-            return true;
-        }
-        return false;
     }
 }

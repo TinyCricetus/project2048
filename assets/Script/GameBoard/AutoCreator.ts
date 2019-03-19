@@ -1,5 +1,6 @@
 import { GameScene } from "./GameScene";
 import { EMPTY, CANNOTPLACE, FULL } from "./GridData";
+import { GameBoardImpl } from "./BoardImpl";
 
 
 
@@ -11,31 +12,32 @@ import { EMPTY, CANNOTPLACE, FULL } from "./GridData";
 export class AutoCreator {
 
     public gameScene: GameScene = null;
-    //用于获取棋盘情况
-    public maze: number[][] = null;
     //用于获取目前棋盘各棋子数据
     public gridArray: cc.Node[][] = null;
+    public autoMode: boolean = false;//智能匹配模式
 
     public typeNum: number[] = null;//用于记录具体方案的类型
     public gridNum: cc.Vec2[] = null;//用于记录具体方案的棋子数值，类型1的方块第二维默认为0
-    public index: number = 0;
-    public caseCount: number = 0;
-    public emptyPos: cc.Vec2[] = null;
-    public autoMode: boolean = false;//智能匹配模式
+
+    private index: number = 0;
+    private caseCount: number = 0;
+    private emptyPos: cc.Vec2[] = null;
+    private length: number = 0;
+    private board: GameBoardImpl = null;
 
     public constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
+        this.board = this.gameScene.board;
         this.init();
     }
 
     public init() {
-        //获取棋盘可用区域引用
-        this.maze = this.gameScene.position.maze;
         this.gridArray = this.gameScene.gridAnimalControl.gridAnimalArray;
 
         this.typeNum = [];
         this.gridNum = [];
         this.emptyPos = [];
+        this.length = this.gameScene.length;
     }
 
     public clear() {
@@ -52,20 +54,13 @@ export class AutoCreator {
         this.caseCount = 0;
     }
 
-
-
-
     public figureEmpty() {
-        //每次启动解决方案时注意清空之前的方案
+        //清空之前的方案
         this.clear();
-
-
-        for (let i = 0; i < this.maze.length; i++) {
-            for (let j = 0; j < this.maze[i].length; j++) {
-                if (this.maze[i][j] == EMPTY) {
-
+        for (let i = 0; i < this.length; i++) {
+            for (let j = 0; j < this.length; j++) {
+                if (this.board.getMaze(cc.v2(i, j)) == EMPTY) {
                     this.emptyPos.push(cc.v2(i, j));
-
                 }
             }
         }
@@ -74,8 +69,6 @@ export class AutoCreator {
             cc.log("游戏结束！");
             return ;
         }
-
-
         this.figureSolve();
     }
 
@@ -90,7 +83,7 @@ export class AutoCreator {
             }
             let temp: cc.Vec2 = this.emptyPos[i + j];
             //获取这个存在点周围的六个点
-            let nodeArray: cc.Vec2[] = this.gameScene.gridAnimalControl.getAroundGrid(cc.v2(temp.x, temp.y));
+            let nodeArray: cc.Vec2[] = this.board.getAroundGrid(cc.v2(temp.x, temp.y));
             //开始进行方案判断
             this.judgeValue(nodeArray, cc.v2(temp.x, temp.y));
             if (this.caseCount >= 3) {
@@ -105,10 +98,10 @@ export class AutoCreator {
         let fullIndex: number[] = [];
         let fullNode: cc.Node[] = [];
         for (let i = 0; i < posArray.length; i++) {
-            if (this.maze[posArray[i].x][posArray[i].y] == EMPTY) {
+            if (this.board.getMaze(posArray[i]) == EMPTY) {
                 emptyIndex.push(i);
             }
-            if (this.maze[posArray[i].x][posArray[i].y] == FULL) {
+            if (this.board.getMaze(posArray[i]) == FULL) {
                 fullNode.push(this.gridArray[posArray[i].x][posArray[i].y]);
                 fullIndex.push(i);
             }
@@ -196,7 +189,6 @@ export class AutoCreator {
                 style2 = style2 + Math.floor(Math.random() * 1000) % 3 + 1;
             }
         }
-        
         this.addCase(cc.v2(style, style2), type);
     }
 
@@ -211,7 +203,6 @@ export class AutoCreator {
         if (num2 >= 9) {
             num2 = num2 - numType - 1;
         }
-
         if (numType < 1) {
             this.addCase(cc.v2(num, 0), 1);
         } else {
@@ -229,7 +220,6 @@ export class AutoCreator {
             return 1;
         }
     }
-
 
     //增加解决方案
     public addCase(num: cc.Vec2, type: number) {
