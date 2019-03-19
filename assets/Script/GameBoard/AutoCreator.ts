@@ -42,8 +42,8 @@ export class AutoCreator {
         this.emptyPos = [];
         this.length = this.gameScene.length;
 
-        this.gridProbability = [25, 30, 22, 23];
-        this.gridType = [2, 1, 3, 4];
+        this.gridProbability = [14, 16, 20, 50];
+        this.gridType = [3, 4, 2, 1];
     }
 
     public clear() {
@@ -240,7 +240,7 @@ export class AutoCreator {
         let num: number = Math.random() * 100;
         for (let i = 0; i < this.gridProbability.length; i++) {
             if (this.gridProbability[i] >= num) {
-                cc.log(this.gridType[i]);
+                //cc.log(this.gridType[i]);
                 return this.gridType[i];
             }
         }
