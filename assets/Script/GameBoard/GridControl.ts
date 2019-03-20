@@ -1,7 +1,7 @@
 import { GameScene } from "./GameScene";
 import { WIDTH, HEIGHT } from "./GridData";
 import { Grid } from "./Grid";
-import { GameBoardImpl } from "./BoardImpl";
+import { BoardImpl } from "./BoardImpl";
 
 /**
  * 用于控制方块
@@ -19,7 +19,7 @@ export class GridControl {
 
     private canRotate: boolean = false;//旋转
     private gridRealPos: cc.Vec2[][] = null;
-    private board: GameBoardImpl = null;
+    private board: BoardImpl = null;
 
     public constructor(gameScene: GameScene) {
         this.gameScene = gameScene;

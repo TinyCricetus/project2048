@@ -1,6 +1,6 @@
 import { GameScene } from "./GameScene";
 import { EMPTY, CANNOTPLACE, FULL } from "./GridData";
-import { GameBoardImpl } from "./BoardImpl";
+import { BoardImpl } from "./BoardImpl";
 
 
 
@@ -23,7 +23,7 @@ export class AutoCreator {
     private caseCount: number = 0;
     private emptyPos: cc.Vec2[] = null;
     private length: number = 0;
-    private board: GameBoardImpl = null;
+    private board: BoardImpl = null;
 
     private gridProbability: number[] = null;//四种方块的概率设定
     private gridType: number[] = null;

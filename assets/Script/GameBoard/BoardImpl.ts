@@ -1,10 +1,10 @@
-import { IGameBoard } from "./IBoard";
+import { IGameBoard as IBoard } from "./IBoard";
 import { Grid } from "./Grid";
 import { WIDTH, HEIGHT, DISTANCE, CANNOTPLACE, CORRECTVALUE, EMPTY, SHALLOW, NORMAL, FULL } from "./GridData";
 import { GameScene } from "./GameScene";
 
 
-export class GameBoardImpl implements IGameBoard {
+export class BoardImpl implements IBoard {
     
     public sourcePos: cc.Vec2 = null;//格子坐标原点(数组坐标)
     

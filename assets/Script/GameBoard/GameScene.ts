@@ -6,7 +6,7 @@ import { GridControl } from "./GridControl";
 import { GridAnimalControl } from "../Animal/GridAnimalControl";
 import { FULL } from "./GridData";
 import { AutoCreator } from "./autoCreator";
-import { GameBoardImpl } from "./BoardImpl";
+import { BoardImpl } from "./BoardImpl";
 import { GridAnimal } from "../Animal/GridAnimal";
 
 const { ccclass, property } = cc._decorator;
@@ -46,7 +46,7 @@ export class GameScene extends cc.Component {
     public auto: AutoCreator = null;
     public helpWheel: number = 0;
     public length: number = 0;
-    public board: GameBoardImpl = null;
+    public board: BoardImpl = null;
 
     private gridControl: GridControl = null;
     private shapeCeartor: ShapeCreator = null;//形状生成器
@@ -74,7 +74,7 @@ export class GameScene extends cc.Component {
         this.shapeCeartor = new ShapeCreator(this.nodePool);
 
         //创建棋盘控制器
-        this.board = new GameBoardImpl(this);
+        this.board = new BoardImpl(this);
 
         //布置方块背景
         this.drawGrid();

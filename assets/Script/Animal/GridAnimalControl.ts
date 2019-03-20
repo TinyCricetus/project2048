@@ -2,7 +2,7 @@ import { GameScene } from "../GameBoard/GameScene";
 import { GridAnimal } from "./GridAnimal";
 import { EMPTY, FULL, NUMBER2048 } from "../GameBoard/GridData";
 import { ScoreTable } from "../Score/ScoreTable";
-import { GameBoardImpl } from "../GameBoard/BoardImpl";
+import { BoardImpl } from "../GameBoard/BoardImpl";
 
 export class GridAnimalControl {
 
@@ -31,7 +31,7 @@ export class GridAnimalControl {
 
     private aroundGrid: cc.Vec2[] = null;//存储剩余应该检测的方块
 
-    private board: GameBoardImpl = null;
+    private board: BoardImpl = null;
 
     //构造函数
     public constructor(gameScene: GameScene) {
