@@ -27,6 +27,7 @@ export class GridPool {
     }
     //放结点
     public putNode(node: cc.Node): void {
+        node.getComponent("Grid").freezeMajorKey();
         this.gridPool.put(node);
     }
 }

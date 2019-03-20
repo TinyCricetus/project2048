@@ -8,14 +8,15 @@ export class GridAnimalControl {
 
     public gridAnimalArray: cc.Node[][] = null;
     public gameScene: GameScene = null;
-    
+    //消除限制,三子消除定义为三，二连消除定义为二
+    public dismissLimit: number = 0;
+
     private scanMaze: number[][] = null;
     private gridDismissArray: cc.Node[] = null;
     private recordArray: cc.Vec2[] = null;
     private checkMaze: boolean[][] = null;
     private centerPoint: cc.Vec2 = null;
     private gridAnimal: GridAnimal = null;
-    public dismissLimit: number = 0;
     private multipleRecord: number = 0;
     private addScore: number = 0;//当前消除增加的分数
 
@@ -29,17 +30,16 @@ export class GridAnimalControl {
     private remian: number = 0;//记录一下联合方块是剩余小的还是大的
 
     private aroundGrid: cc.Vec2[] = null;//存储剩余应该检测的方块
-    
+
     private board: GameBoardImpl = null;
 
     //构造函数
-    constructor(gameScene: GameScene) {
+    public constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
         this.board = this.gameScene.board;
         this.init();
     }
 
-    //初始化函数
     public init() {
         //记录用的数组,用于临时记录最近的一次扫描相同的方块
         this.recordArray = [];
@@ -50,9 +50,13 @@ export class GridAnimalControl {
         this.toolArray = [];
         this.initArray(this.gameScene.length);
         this.gridAnimal = new GridAnimal(this);
-        this.dismissLimit = 2;
+        this.dismissLimit = 3;
         this.aroundGrid = [];
         this.centerPoint = this.board.sourcePos;
+    }
+
+    public getGridAnimalArray(pos: cc.Vec2): cc.Node {
+        return this.gridAnimalArray[pos.x][pos.y];
     }
 
     //相关数组初始化
@@ -72,8 +76,6 @@ export class GridAnimalControl {
      * 联合数组加入动画数组
      */
     public addCombineToAnimalArray(node: cc.Node[], pos: cc.Vec2[]) {
-        // //动画启动时禁止拖动
-        // this.gameScene.gridControl.canDrag = false;
         this.combineGrid = node;
         this.combinePos = pos;
         for (let i = 0; i < pos.length; i++) {
@@ -95,30 +97,21 @@ export class GridAnimalControl {
         }
     }
 
-    public dealGrid(node: cc.Node, pos: cc.Vec2, anotherPos: cc.Vec2) {
+    private dealGrid(node: cc.Node, pos: cc.Vec2, anotherPos: cc.Vec2) {
         let result: boolean = this.judgeDismiss(node, pos);
-            if (result) {
-                this.searchAndRecordAroundPos(pos);
-                this.dismissGrid(node, pos);
-            }
-            //获取剩余结点之后判断上个结点是否发生了消除操作，如果没有，对剩余结点进行消除检测
-            if (!result) {
-                //如果第一块没有产生消除，应该记录第二块的
-                this.aroundGrid.push(anotherPos);
-                this.nextStep();
-            }
-    }
-
-    //记录玩家下棋点周围的棋子
-    //从此函数增加对连续消除的限制
-    public searchAndRecordAroundPos(pos: cc.Vec2) {
-        let tempArray: cc.Vec2[] = this.board.getAroundGrid(pos);
-        for (let i of tempArray) {
-            this.aroundGrid.push(i);
+        if (result) {
+            this.searchAndRecordAroundPos(pos);
+            this.dismissGrid(node, pos);
+        }
+        //获取剩余结点之后判断上个结点是否发生了消除操作，如果没有，对剩余结点进行消除检测
+        if (!result) {
+            //如果第一块没有产生消除，应该记录第二块的
+            this.aroundGrid.push(anotherPos);
+            this.nextStep();
         }
     }
 
-    //第一轮动作结束之后回调函数调用的下一步
+    //动作结束之后回调函数调用的下一步
     public nextStep() {
         if (this.aroundGrid.length > 0) {
             while (this.aroundGrid.length > 0) {
@@ -134,12 +127,6 @@ export class GridAnimalControl {
             }
         } else {
             this.startToCreate();
-        }
-    }
-
-    public startToCreate() {
-        if (this.gameScene.gameGrid.childrenCount == 0) {
-            this.gameScene.creatorControl.createGrid();
         }
     }
 
@@ -165,18 +152,42 @@ export class GridAnimalControl {
         } else {
             if (this.judgeDismiss(node, pos)) {
                 //如果这个单独型方块是玩家下的，记录周围棋子
-                if (this.dismissLimit == 2) {
+                if (this.dismissLimit == 3) {
                     this.searchAndRecordAroundPos(pos);
                 }
                 this.dismissGrid(node, pos);
             } else {
                 //当检测到不需要继续合并时，开始剩余操作
                 //如果此方块是之前合成过来的，应该检测其周围方块
-                if (this.dismissLimit == 1) {
+                if (this.dismissLimit == 2) {
                     this.searchAndRecordAroundPos(pos);
                 }
                 this.nextStep();
             }
+        }
+    }
+
+    //在GridAnimal中运用,动画执行完毕之后增加方块
+    public addLevelUpGridToScene(style: number, pos: cc.Vec2, type: number, callback: Function) {
+        //清空消除方块的地图标记之后记得在地图加上合成方块
+        this.gameScene.addAloneGridToScene(pos, style + 1, type, callback);
+    }
+
+    private startToCreate() {
+        if (this.gameScene.gameGrid.childrenCount == 0) {
+            this.gameScene.creatorControl.createGrid();
+        }
+    }
+
+    /**
+     * 记录玩家下棋点周围的棋子
+     * 从此函数增加对连续消除的限制
+     * @param pos 
+     */
+    private searchAndRecordAroundPos(pos: cc.Vec2) {
+        let tempArray: cc.Vec2[] = this.board.getAroundGrid(pos);
+        for (let i of tempArray) {
+            this.aroundGrid.push(i);
         }
     }
 
@@ -185,16 +196,17 @@ export class GridAnimalControl {
      * @param node 
      * @param pos 
      */
-    public judgeDismiss(node: cc.Node, pos: cc.Vec2): boolean {
+    private judgeDismiss(node: cc.Node, pos: cc.Vec2): boolean {
         let dimissCount = this.scanAnimalArray(pos);
-        if (dimissCount > this.dismissLimit) {
+        if (dimissCount >= this.dismissLimit) {
             return true;
         } else {
             return false;
         }
     }
 
-    public dismissGrid(node: cc.Node, pos: cc.Vec2) {
+
+    private dismissGrid(node: cc.Node, pos: cc.Vec2) {
         //确认消除，开始消除有关操作
         this.addToDismissArray();
         this.figureOutScore(this.dismissLimit, this.gridDismissArray.length,
@@ -207,7 +219,7 @@ export class GridAnimalControl {
         this.clearPosition();
     }
 
-    public updateScore() {
+    private updateScore() {
         //放置方块之后更新分数
         this.gameScene.score += this.addScore;
         this.gameScene.scoreDisplay.string = `${this.gameScene.score}`;
@@ -215,15 +227,9 @@ export class GridAnimalControl {
         cc.log(this.gameScene.scoreDisplay.string);
     }
 
-    //在GridAnimal中运用,动画执行完毕之后增加方块
-    public addLevelUpGridToScene(style: number, pos: cc.Vec2, type: number, callback: Function) {
-        //清空消除方块的地图标记之后记得在地图加上合成方块
-        this.gameScene.addAloneGridToScene(pos, style + 1, type, callback);
-    }
-
 
     //2048爆炸
-    public startToExplosion(node: cc.Node, pos: cc.Vec2) {
+    private startToExplosion(node: cc.Node, pos: cc.Vec2) {
         this.initCheckStatus();//初始化状态点
         let aroundArray: cc.Vec2[] = this.board.getAroundGrid(pos);
         this.recordArray.push(pos);
@@ -244,7 +250,7 @@ export class GridAnimalControl {
     /**
      * 利用坐标记录数组扫描全体落子点，将可消除方块加入消除数组
      */
-    public addToDismissArray() {
+    private addToDismissArray() {
         for (let i = 0; i < this.recordArray.length; i++) {
             let pos: cc.Vec2 = this.recordArray[i];
             if (this.gridAnimalArray[pos.x][pos.y] == null) {
@@ -258,7 +264,7 @@ export class GridAnimalControl {
     /**
      * 重置地图空位标记
      */
-    public clearPosition() {
+    private clearPosition() {
         for (let i = 0; i < this.recordArray.length; i++) {
             let pos: cc.Vec2 = this.recordArray[i];
             this.board.setMaze(pos, EMPTY);
@@ -269,7 +275,7 @@ export class GridAnimalControl {
     }
 
     //初始化标记数组
-    public initCheckStatus() {
+    private initCheckStatus() {
         while (this.recordArray.length > 0) {
             this.recordArray.pop();
         }
@@ -289,7 +295,7 @@ export class GridAnimalControl {
      * BFS宽度优先,搜索周围相同的结点
      * @param pos 最新的落子点
      */
-    public scanAnimalArray(pos: cc.Vec2): number {
+    private scanAnimalArray(pos: cc.Vec2): number {
         //初始化搜索状态
         this.initCheckStatus();
 
@@ -322,7 +328,7 @@ export class GridAnimalControl {
      * @param oldPos 对比的坐标
      * @param style 应该具有的风格
      */
-    public checkPos(newPos: cc.Vec2, oldPos: cc.Vec2, style: number): boolean {
+    private checkPos(newPos: cc.Vec2, oldPos: cc.Vec2, style: number): boolean {
         let length = (this.centerPoint.x - 1) * 2 + 1;
         if (newPos.x > length || newPos.y > length || newPos.x < 1 || newPos.y < 1) {
             return false;
@@ -345,7 +351,7 @@ export class GridAnimalControl {
         return true;
     }
 
-    public checkExplosionPos(pos: cc.Vec2) {
+    private checkExplosionPos(pos: cc.Vec2) {
         //确认坐标是否在范围内
         let length = (this.centerPoint.x - 1) * 2 + 1;
         if (pos.x > length || pos.y > length || pos.x < 1 || pos.y < 1) {
@@ -358,7 +364,7 @@ export class GridAnimalControl {
         return true;
     }
 
-    public figureOutScore(dismissLimit: number, nodeCount: number, gridNum: number) {
+    private figureOutScore(dismissLimit: number, nodeCount: number, gridNum: number) {
         //如果是用户点击落子的话，消除限制是2， 如果是电脑合成落子的话，消除限制是1
         if (dismissLimit == 2) {
             this.multipleRecord = 1;
@@ -367,9 +373,5 @@ export class GridAnimalControl {
         }
         this.addScore = ScoreTable.times[this.multipleRecord] * ScoreTable.multiple[nodeCount]
             * ScoreTable.basicScore[gridNum];
-        // if (typeof this.addScore != "number") {
-        //     cc.log("分数又出错了！");
-        //     this.addScore = Number(0);
-        // }
     }
 }

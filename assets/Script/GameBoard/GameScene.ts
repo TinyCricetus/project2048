@@ -104,36 +104,6 @@ export class GameScene extends cc.Component {
         this.displayWheel();
     }
 
-    private gridAddToArray(pos: cc.Vec2): void {
-        let tempGrid: cc.Node = null;
-        tempGrid = this.nodePool.getNode();
-        tempGrid.position = pos;
-        //将方块放入方块数组
-        this.bgGridArray.push(tempGrid);
-    }
-
-    //将方块渲染上画板
-    private drawGrid(): void {
-        for (let i = 0; i < this.length; i++) {
-            for (let j = 0; j < this.length; j++) {
-                if (this.board.getRealPos(cc.v2(i, j)) == null) {
-                    continue;
-                } else {
-                    //将坐标赋值给方块坐标
-                    this.gridAddToArray(this.board.getRealPos(cc.v2(i, j)));
-                }
-            }
-        }
-        //加入结点
-        for (let i = 0; i < this.bgGridArray.length; i++) {
-            //cc.log(this.gridArray[i]);
-            if (this.bgGridArray[i].position == this.board.sourcePos) {
-                continue;
-            }
-            this.node.addChild(this.bgGridArray[i]);
-        }
-    }
-
     /**
      * 创造方块并加入到方块产生区
      */
@@ -170,6 +140,12 @@ export class GameScene extends cc.Component {
 
             default:break;
         }
+
+        //设定主键
+        if (style[0] == style[1]) {
+            tempNode[0].getComponent("Grid").activeMajorKey();
+        }
+        
         for (let i = 0; i < tempNode.length; i++) {
             tempNode[i].rotation = this.gameGrid.rotation;
             this.gameGrid.addChild(tempNode[i]);
@@ -181,7 +157,7 @@ export class GameScene extends cc.Component {
      * 加入联合方块
      */
     public addCombineGridToScene(node: cc.Node[], index: number[]) {
-        this.gridAnimalControl.dismissLimit = 2;
+        this.gridAnimalControl.dismissLimit = 3;
 
         let style: number[] = [];
         let type: number = 0;
@@ -233,7 +209,7 @@ export class GameScene extends cc.Component {
      */
     public addGridToScene(node: cc.Node, index: number): void {
         //注意从关联落子的地方是消除限制是3
-        this.gridAnimalControl.dismissLimit = 2;
+        this.gridAnimalControl.dismissLimit = 3;
         //node.position = this.gridArray[index].position;
         let style = node.getComponent("Grid").getStyle();
         let type = node.getComponent("Grid").gridType;
@@ -244,6 +220,38 @@ export class GameScene extends cc.Component {
 
         /*----------------------------用于单元测试--------------------------*/
         //this.unitTest();
+    }
+
+
+
+    private gridAddToArray(pos: cc.Vec2): void {
+        let tempGrid: cc.Node = null;
+        tempGrid = this.nodePool.getNode();
+        tempGrid.position = pos;
+        //将方块放入方块数组
+        this.bgGridArray.push(tempGrid);
+    }
+
+    //将方块渲染上画板
+    private drawGrid(): void {
+        for (let i = 0; i < this.length; i++) {
+            for (let j = 0; j < this.length; j++) {
+                if (this.board.getRealPos(cc.v2(i, j)) == null) {
+                    continue;
+                } else {
+                    //将坐标赋值给方块坐标
+                    this.gridAddToArray(this.board.getRealPos(cc.v2(i, j)));
+                }
+            }
+        }
+        //加入结点
+        for (let i = 0; i < this.bgGridArray.length; i++) {
+            //cc.log(this.gridArray[i]);
+            if (this.bgGridArray[i].position == this.board.sourcePos) {
+                continue;
+            }
+            this.node.addChild(this.bgGridArray[i]);
+        }
     }
 
     /**
@@ -268,12 +276,12 @@ export class GameScene extends cc.Component {
      */
     public addAloneGridToScene(pos: cc.Vec2, style: number, type, callback: Function) {
         //注意从合成落子的地方是消除限制是2
-        this.gridAnimalControl.dismissLimit = 1;
+        this.gridAnimalControl.dismissLimit = 2;
         let index = this.board.mazeToArray(pos);
         if (style >= 11) {
             cc.log("2048启动爆炸！");
             style = 11;
-            //使用次数加2
+            //使用次数加5
             this.helpWheel += 5;
         }
         //记录一下已经存在的更大的数字
@@ -286,6 +294,7 @@ export class GameScene extends cc.Component {
     public unitTest(): cc.Vec2 {
         return this.board.arrayToMaze(12);
     }
+
 
     public gameOverFunc() {
         this.gameOver.active = true;

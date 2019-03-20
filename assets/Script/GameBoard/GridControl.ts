@@ -8,27 +8,26 @@ import { GameBoardImpl } from "./BoardImpl";
  */
 export class GridControl {
 
-    public shapeCreatorNode: cc.Node = null;
-    public gameScene: GameScene = null;
-    public gameGrid: cc.Node = null;
+    private shapeCreatorNode: cc.Node = null;
+    private gameScene: GameScene = null;
+    private gameGrid: cc.Node = null;
 
-    public pos: cc.Vec2 = null;
-    public actionFlag: boolean = true;
+    private pos: cc.Vec2 = null;
+    private actionFlag: boolean = true;
 
-    public canDrag: boolean = false;//拖动
+    private canDrag: boolean = false;//拖动
 
     private canRotate: boolean = false;//旋转
     private gridRealPos: cc.Vec2[][] = null;
     private board: GameBoardImpl = null;
 
-    constructor(gameScene: GameScene) {
+    public constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
         this.board = this.gameScene.board;
         this.init();
     }
 
-    public init(): void {
-
+    private init(): void {
         this.shapeCreatorNode = this.gameScene.shapeCraetor;
         //初始化位置坐标
         this.gameGrid = this.gameScene.gameGrid;
@@ -41,7 +40,7 @@ export class GridControl {
     }
 
 
-    public touchedBegin(event: cc.Event.EventTouch): void {
+    private touchedBegin(event: cc.Event.EventTouch): void {
         if (this.gameGrid.childrenCount <= 0) {
             return ;
         }
@@ -53,11 +52,10 @@ export class GridControl {
         }
     }
 
-    public touchedMove(event: cc.Event.EventTouch): void {
+    private touchedMove(event: cc.Event.EventTouch): void {
         if (this.gameGrid.childrenCount <= 0) {
             return ;
         }
-
         let tempPos = this.gameGrid.convertToWorldSpaceAR(this.gameGrid.children[0].position);
         tempPos = this.gameScene.node.convertToNodeSpaceAR(tempPos);
         this.board.judgeSuperposition(tempPos);
@@ -77,7 +75,7 @@ export class GridControl {
         }
     }
 
-    public touchedEnd(event: cc.Event.EventTouch): void {
+    private touchedEnd(event: cc.Event.EventTouch): void {
         if (this.gameGrid.childrenCount <= 0) {
             return ;
         }
@@ -101,16 +99,26 @@ export class GridControl {
             //注意标记要让落子方块交换坐标
             this.gameScene.isSpin *= -1;
             this.canRotate = false;
-
-            cc.log(`目前是${this.gameScene.isSpin}状态`);
         }
         this.canDrag = false;
+        //松开后的操作
+        this.onTouchEnd(event.getLocation());
+    }
+
+    //用于动作回调，控制动作执行完毕后才可执行下一个动作
+    private judgeAction(): void {
+        this.actionFlag = true;
+    }
+
+
+
+    private onTouchEnd(temp: cc.Vec2) {
         //一旦松开，控制器因该马上回到形状发生器位置
         this.gameGrid.position = this.shapeCreatorNode.position;
         //一旦松开，先判断坐标再执行落子操作
         let judge_1: boolean = false;
         let judge_2: boolean = false;
-        let pos: cc.Vec2 = this.gameScene.node.convertToNodeSpaceAR(event.getLocation());
+        let pos: cc.Vec2 = this.gameScene.node.convertToNodeSpaceAR(temp);
         if (this.gameScene.combineGridType == 1) {
             judge_1 = this.board.ifMoveToBoard(pos);
             judge_2 = true;
@@ -123,10 +131,5 @@ export class GridControl {
         if (judge_1 && judge_2) {
             this.board.moveToChess();
         }
-    }
-
-    //用于动作回调，控制动作执行完毕后才可执行下一个动作
-    public judgeAction(): void {
-        this.actionFlag = true;
     }
 }

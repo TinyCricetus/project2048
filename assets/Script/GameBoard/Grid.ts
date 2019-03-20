@@ -30,6 +30,27 @@ export class Grid extends cc.Component {
         this.node.rotation = 0;
     }
 
+
+    /**
+     * //永远转圈
+    public cicleForever (): void {
+        let seq = cc.sequence(cc.rotateBy(this.duration, 180), cc.rotateBy(this.duration, 180));
+        let actionForever = cc.repeatForever(seq);
+        this.node.runAction(actionForever);
+    }
+     */
+
+    public activeMajorKey() {
+        let seq: cc.FiniteTimeAction = cc.sequence(cc.scaleTo(0.3, 0.8), cc.scaleTo(0.3, 1.2), cc.scaleTo(0.3, 1));
+        let actForever = cc.repeatForever(seq);
+        this.node.runAction(actForever);
+    }
+
+    public freezeMajorKey() {
+        this.node.scale = 1;
+        this.node.stopAllActions();
+    }
+
     public setStyle(style: number): void {
         this.style = style;
     }
