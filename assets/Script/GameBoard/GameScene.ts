@@ -57,7 +57,6 @@ export class GameScene extends cc.Component {
         //设定棋盘扫面区域，例如区域1-7，扫描区域设置为0-8
         this.length = this.centerToEdge * 2 + 2;
 
-
         //加载本地分数储存
         let localScore: number = Number(cc.sys.localStorage.getItem("score"));
         if (localScore == 0) {
@@ -68,8 +67,8 @@ export class GameScene extends cc.Component {
         }
 
         //初始化方块节点池
-        this.nodePool = new GridPool();
-        this.nodePool.initNodePool(this.gridPrefab);//初始化结点池
+        this.nodePool = GridPool.getInstance();
+        this.nodePool.init(this.gridPrefab);//初始化结点池
         //创建形状生成器
         this.shapeCeartor = new ShapeCreator(this.nodePool);
 
@@ -222,8 +221,6 @@ export class GameScene extends cc.Component {
         //this.unitTest();
     }
 
-
-
     private gridAddToArray(pos: cc.Vec2): void {
         let tempGrid: cc.Node = null;
         tempGrid = this.nodePool.getNode();
@@ -295,13 +292,11 @@ export class GameScene extends cc.Component {
         return this.board.arrayToMaze(12);
     }
 
-
     public gameOverFunc() {
         this.gameOver.active = true;
         cc.sys.localStorage.setItem("score", 0);
         this.gameOver.children[0].getComponent(cc.Label).string = `${this.score}`;
     }
-
 
     public startHelp() {
         if (this.auto.autoMode) {
