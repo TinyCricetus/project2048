@@ -27,7 +27,7 @@ export class Grid extends cc.Component {
     public init(style: number, type: number): void {
         this.style = style;
         this.gridType = type;
-        this.node.rotation = 0;
+        this.node.angle = 0;
     }
 
 

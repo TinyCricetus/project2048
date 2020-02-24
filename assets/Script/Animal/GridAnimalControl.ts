@@ -224,7 +224,7 @@ export class GridAnimalControl {
         this.gameScene.score += this.addScore;
         this.gameScene.scoreDisplay.string = `${this.gameScene.score}`;
         cc.sys.localStorage.setItem("score", this.gameScene.score);
-        cc.log(this.gameScene.scoreDisplay.string);
+        // cc.log(this.gameScene.scoreDisplay.string);
     }
 
 

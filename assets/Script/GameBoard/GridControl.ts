@@ -45,9 +45,10 @@ export class GridControl {
             return ;
         }
         this.pos = event.getLocation();
-        this.pos = this.shapeCreatorNode.convertToNodeSpace(this.pos);
-        if ((this.pos.x > 0 && this.pos.x < this.shapeCreatorNode.width) &&
-            this.pos.y > 0 && this.pos.y < this.shapeCreatorNode.height) {
+        // console.log("touchPosition:", this.pos);
+        this.pos = this.shapeCreatorNode.convertToNodeSpaceAR(this.pos);
+        if ((this.pos.x > -this.shapeCreatorNode.width / 2 && this.pos.x < this.shapeCreatorNode.width / 2) &&
+            this.pos.y > -this.shapeCreatorNode.height / 2 && this.pos.y < this.shapeCreatorNode.height / 2) {
             this.canRotate = true;
         }
     }
@@ -61,9 +62,9 @@ export class GridControl {
         this.board.judgeSuperposition(tempPos);
 
         if (this.canRotate) {
-            let temp: cc.Vec2 = this.shapeCreatorNode.convertToNodeSpace(event.getLocation());
-            if (temp.x < 0 || temp.x > this.shapeCreatorNode.width ||
-                temp.y < 0 || temp.y > this.shapeCreatorNode.height) {
+            let temp: cc.Vec2 = this.shapeCreatorNode.convertToNodeSpaceAR(event.getLocation());
+            if (temp.x < -this.shapeCreatorNode.width / 2 || temp.x > this.shapeCreatorNode.width / 2 ||
+                temp.y < -this.shapeCreatorNode.height / 2 || temp.y > this.shapeCreatorNode.height / 2) {
                 this.canDrag = true;
                 this.canRotate = false;
             }

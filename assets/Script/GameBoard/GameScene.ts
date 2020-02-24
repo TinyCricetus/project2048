@@ -110,8 +110,8 @@ export class GameScene extends cc.Component {
         this.combineGridType = 1;
         let tempNode: cc.Node = null;
         tempNode = this.shapeCeartor.creatorShape(style, 1);
-        tempNode.position = cc.v2(0, 0);
-        tempNode.rotation = this.gameGrid.rotation;
+        tempNode.x = tempNode.y = 0;
+        tempNode.angle = this.gameGrid.angle;
         this.gameGrid.addChild(tempNode);
     }
 
@@ -146,7 +146,7 @@ export class GameScene extends cc.Component {
         }
         
         for (let i = 0; i < tempNode.length; i++) {
-            tempNode[i].rotation = this.gameGrid.rotation;
+            tempNode[i].angle = this.gameGrid.angle;
             this.gameGrid.addChild(tempNode[i]);
         }
     }

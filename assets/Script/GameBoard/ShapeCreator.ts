@@ -1,7 +1,6 @@
 import { CustomSkin } from "../Skin/CustomSkin";
 import { GridPool } from "./GridPool";
 import { ScoreTable } from "../Score/ScoreTable";
-import { SkinDef } from "../Skin/SkinDef";
 
 export class ShapeCreator {
 

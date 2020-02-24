@@ -3429,7 +3429,8 @@ declare module cc {
 		y: number;		
 		/** !#en Rotation of node.
 		!#zh 该节点旋转角度。 */
-		rotation: number;		
+		rotation: number;
+		angle: number;		
 		/** !#en Rotation on x axis.
 		!#zh 该节点 X 轴旋转角度。 */
 		rotationX: number;		

@@ -1,7 +1,5 @@
 import { GameScene } from "./GameScene";
-import { GridControl } from "./GridControl";
-import { WIDTH, HEIGHT, NORMAL, SHALLOW, EMPTY, CANNOTPLACE, FULL, NUMBER2048 } from "./GridData";
-import { BoardImpl } from "./BoardImpl";
+import { NUMBER2048 } from "./GridData";
 
 /**
  * 游戏全局逻辑控制
